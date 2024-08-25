@@ -8,15 +8,14 @@ import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
-    PassportModule, 
+    PassportModule,
     JwtModule.register({
       secret: process.env.jwtSecret!,
       signOptions: { expiresIn: '10h' },
-    })
+    }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
-
 export class AuthModule {}
