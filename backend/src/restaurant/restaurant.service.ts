@@ -26,6 +26,10 @@ export class RestaurantService {
     phoneNumber, latitude, longitude, openingHours, cuisineType, DeliveryRange 
     }: createRestaurantDto) {
         try {
+            if(req.user.role !== 'Business') {
+                throw new UnauthorizedException("only business owner can create restaurant")
+            }
+
             const userId = req.user.sub
             const DeliveriRange = DeliveryRange || "3km"
             const openinghours = openingHours || {
@@ -44,6 +48,7 @@ export class RestaurantService {
                     //location
                     latitude: latitude,
                     longitude: longitude,
+                    // delivery info
                     openingHours: openinghours,
                     cuisineType: cuisineType || '',
                     DeliveryRange: DeliveriRange
@@ -64,25 +69,10 @@ export class RestaurantService {
     async deleteRestaurant(req: any, id: string) {
         try {
             // if we delete restaurant does the user also need to be deleted?
-            
-            if(req.user.role !== 'Business') {
-                throw new UnauthorizedException("only business owner can access")
-            }
-
             const userId = req.user.sub
-            const getRestaurant = await prisma.restaurant.findUnique({
-                where: {
-                    id: id
-                },
-                select: {
-                    ownerId: true
-                }
-            })
 
-            if(userId !== getRestaurant.ownerId) {
-                throw new Error("you are not the owner of the restaurant")
-            }
-
+            // only one exist as to why i can use both without AND operator but always be careful when
+            // doing this
             const deletePrismaRestaurant = await prisma.restaurant.delete({
                 where: {
                     id: id,
@@ -101,23 +91,7 @@ export class RestaurantService {
 
     async updateRestaurant(req: any, id: string, body: updateRestaurantDto) {
         try {
-            if(req.user.role !== 'Business') {
-                throw new UnauthorizedException("only business owner can access")
-            }
-            // verifications 
             const userId = req.user.sub
-            const getRestaurant = await prisma.restaurant.findUnique({
-                where: {
-                    id: id
-                },
-                select: {
-                    ownerId: true
-                }
-            })
-
-            if(userId !== getRestaurant.ownerId) {
-                throw new Error("you are not the owner of the restaurant")
-            }
 
             // updating the restaurant // just updating what is needed
             const updatePrismaRestaurant = await prisma.restaurant.update({
