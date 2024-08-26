@@ -3,9 +3,11 @@ import { prisma } from '../../prisma/db'
 import { CreateMenuDto } from './dto/CreateMenu.dto';
 import { UpdateMenuDto } from './dto/UpdateMenu.dtio';
 import { getAllMenusDto } from './dto/getAllMenus.dto';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class MenuService {
+    constructor(private categoryService: CategoryService) {}
 
     async getAllMenus(restaurantId: string, { category }: getAllMenusDto) {
 
@@ -13,11 +15,13 @@ export class MenuService {
             where: {
                 AND: [
                     {restaurantId: restaurantId},
-                    {category: category}
+                    {category: {
+                        CategoryName: category 
+                    }}
                 ]
             }
         })
-        
+
         return getMenus
     }
 
@@ -57,18 +61,31 @@ export class MenuService {
         const userId = req.user.sub
         const Availability = availability || false // default is false
 
-        const createPrismaMenu = await prisma.menu.create({
-            data: {
-                name: name,
-                description: description || '',
-                price: price,
-                category: category || '',
-                availability: Availability,
-                restaurantId: restaurantId
-            }
+        const createPrismaMenu = await prisma.$transaction(async txprisma => {
+            const CreateCategory = await this.categoryService.CreateCategory(restaurantId, {CategoryName: category})
+            
+            const createMenu = await txprisma.menu.create({
+                data: {
+                    name: name,
+                    description: description || '',
+                    price: price,
+                    categoryId: CreateCategory.newCategory.id,
+                    availability: Availability,
+                    restaurantId: restaurantId
+                },
+                include: {
+                    category: true
+                }
+            })
+
+            return createMenu
         })
 
-        return createPrismaMenu
+        return {
+            success: true,
+            message: 'successfully created menu',
+            newMenu: createPrismaMenu
+        }
     }
 
     async DeleteMenuItem(id: string) {

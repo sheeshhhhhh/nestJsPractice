@@ -55,7 +55,11 @@ export class RestaurantService {
                 }
             }) 
 
-            return createPrismaRestaurant
+            return {
+                success: true,
+                message: "successfully created restaurant",
+                newRestaurant: createPrismaRestaurant
+            }
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2002') {
