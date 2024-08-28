@@ -12,5 +12,4 @@ export class createRestaurantDto {
 
     cuisineType?: string;
     DeliveryRange: string;
-
 }

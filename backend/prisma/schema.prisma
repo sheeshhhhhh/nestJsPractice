@@ -86,6 +86,7 @@ model Category {
   restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onUpdate: Cascade)
 
   menu            Menu[]
+  @@unique([CategoryName, restaurantId])
 } 
 model Menu {
   id              String @id @default(cuid())

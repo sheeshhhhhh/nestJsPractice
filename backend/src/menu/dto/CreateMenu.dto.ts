@@ -6,7 +6,7 @@ export class CreateMenuDto {
     price: number;
 
     category?: string;
-    availability: boolean;
+    availability?: boolean;
 
     restaurantId: string;
 }

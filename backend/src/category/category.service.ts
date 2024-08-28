@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { prisma } from 'prisma/db';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/CreateCategory.dto';
+import { Category, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
 
     // mainly for editing categories
-    async GetCategories(restaurantId: string) {
+    async GetCategories(restaurantId: string): Promise<Category[] | undefined> {
         const getBusinessCategories = await prisma.category.findMany({
             where: {
                 restaurantId: restaurantId
@@ -16,19 +17,29 @@ export class CategoryService {
         return getBusinessCategories
     }
 
-    async CreateCategory(restaurantId: string, { CategoryName } : CreateCategoryDto) {
-
-        const createCategory =  await prisma.category.create({
-            data: {
-                restaurantId: restaurantId,
-                CategoryName: CategoryName
+    async CreateCategory(restaurantId: string, { CategoryName } : CreateCategoryDto)
+    : Promise<any | undefined> {
+        try {
+            const createCategory =  await prisma.category.create({
+                data: {
+                    restaurantId: restaurantId,
+                    CategoryName: CategoryName
+                }
+            })
+    
+            return {
+                success: true,
+                message: "successfully created category",
+                newCategory: createCategory
             }
-        })
-
-        return {
-            success: true,
-            message: "successfully created category",
-            newCategory: createCategory
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2002') {
+                    throw new NotImplementedException("category already exist")
+                }
+            } else {
+                throw new Error(error)
+            }
         }
     }
 
@@ -42,7 +53,8 @@ export class CategoryService {
 
         return {
             success: true,
-            message: "category deleted"
+            message: "category deleted",
+            deletedId: deleteCategory.id
         }
     }
 

@@ -2,10 +2,11 @@ import {
   Injectable,
   InternalServerErrorException,
   NotAcceptableException,
+  NotImplementedException,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
-import { loginDTO, UserCreate } from './dto';
+import { loginDTO, OwnerCreateDto, UserCreateDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -52,7 +53,7 @@ export class AuthService {
     };
   }
 
-  async createUser({ name, username, password }: UserCreate) {
+  async createUser({ name, username, password }: UserCreateDto) {
     try {
       const hashPassword = await bcrypt.hash(password, 10);
 
@@ -71,6 +72,28 @@ export class AuthService {
     }
   }
 
+  async createRestaurantOwner({ name, username, password, restaurant }: OwnerCreateDto) {
+    try {
+      const hashPassword = await bcrypt.hash(password, 10)
+  
+      const createUserOwner = await this.prisma.user.create({
+        data: {
+          username,
+          name,
+          password: hashPassword,
+          role: 'Business'
+        }
+      })
+  
+      return this.login(createUserOwner);
+    } catch (error) {
+      if(error instanceof Prisma.PrismaClientKnownRequestError) {
+        if(error.code === 'P2002') {
+          throw new NotImplementedException("username already exist!")
+        }
+      }
+    }
+  }
   // make otp later
 
   async check(req: any) {

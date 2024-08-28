@@ -10,7 +10,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
-import { UserCreate } from './dto';
+import { OwnerCreateDto, UserCreateDto } from './dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,10 +23,14 @@ export class AuthController {
   }
 
   @Post('signUp')
-  async createUser(@Body() UserCreate: UserCreate) {
+  async createUser(@Body() UserCreate: UserCreateDto) {
     return this.authService.createUser(UserCreate);
   }
 
+  @Post('signUpRestaurantOwner') // for restaurant owner this is created
+  async createRestaurantOwner(@Body() OwnerCreate: OwnerCreateDto) {
+    return this.authService.createRestaurantOwner(OwnerCreate)
+  }
   // implement settings later
 
   @UseGuards(JwtAuthGuard) // this is use for checking the user a lot of times

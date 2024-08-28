@@ -62,14 +62,23 @@ export class MenuService {
         const Availability = availability || false // default is false
 
         const createPrismaMenu = await prisma.$transaction(async txprisma => {
-            const CreateCategory = await this.categoryService.CreateCategory(restaurantId, {CategoryName: category})
-            
+            const CreateCategory = await txprisma.category.findUnique({
+                where: {    
+                    CategoryName_restaurantId: {
+                        CategoryName: category,
+                        restaurantId: restaurantId
+                    }
+                }
+            })
+
+            if(!CreateCategory) return false
+
             const createMenu = await txprisma.menu.create({
                 data: {
                     name: name,
                     description: description || '',
                     price: price,
-                    categoryId: CreateCategory.newCategory.id,
+                    categoryId: CreateCategory.id,
                     availability: Availability,
                     restaurantId: restaurantId
                 },
@@ -80,6 +89,11 @@ export class MenuService {
 
             return createMenu
         })
+
+        if(createPrismaMenu === false) return {
+            success: false,
+            message: "such category does not exist"
+        }
 
         return {
             success: true,

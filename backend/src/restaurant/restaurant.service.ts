@@ -1,12 +1,20 @@
 import { Injectable, InternalServerErrorException, NotImplementedException, UnauthorizedException } from '@nestjs/common';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { prisma } from 'prisma/db';
-import { Prisma } from '@prisma/client';
+import { Prisma, Restaurant } from '@prisma/client';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 
 @Injectable()
 export class RestaurantService {
-    // not tested yet
+
+    //util
+    serializephoneNumber(body: Restaurant, phoneNumber: bigint) {
+        return {
+            ...body,
+            phoneNumber: Number(phoneNumber)
+        }
+    }
+
     async getRestaurant(req: any, id: string) {
         // get other info of restarant later like if following or not and 
         // also the purchase history from restaurant
@@ -19,7 +27,7 @@ export class RestaurantService {
             }
         })
 
-        return getRestaurantInfo
+        return this.serializephoneNumber(getRestaurantInfo, getRestaurantInfo.phoneNumber)
     }
 
     async createRestaurant(req: any, { name, address, description, email,
@@ -27,15 +35,16 @@ export class RestaurantService {
     }: createRestaurantDto) {
         try {
             if(req.user.role !== 'Business') {
+                console.log('is not business owner')
                 throw new UnauthorizedException("only business owner can create restaurant")
             }
 
             const userId = req.user.sub
             const DeliveriRange = DeliveryRange || "3km"
             const openinghours = openingHours || {
-                "open" : "8am",
-                "closed" : "9pm"
-            }
+                open : "8am",
+                closed : "9pm"
+            } as Prisma.JsonObject
 
             const createPrismaRestaurant = await prisma.restaurant.create({
                 data: {
@@ -44,7 +53,7 @@ export class RestaurantService {
                     address: address,
                     description: description,
                     email: email,
-                    phoneNumber: phoneNumber,
+                    phoneNumber: phoneNumber || 8312313254,
                     //location
                     latitude: latitude,
                     longitude: longitude,
@@ -55,12 +64,14 @@ export class RestaurantService {
                 }
             }) 
 
+
             return {
                 success: true,
                 message: "successfully created restaurant",
-                newRestaurant: createPrismaRestaurant
+                newRestaurant: this.serializephoneNumber(createPrismaRestaurant, createPrismaRestaurant.phoneNumber)
             }
         } catch (error) {
+            console.log(error)
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2002') {
                     // if user already have a restaurant
@@ -110,8 +121,8 @@ export class RestaurantService {
             return {
                 success: true,
                 message: 'successfully changed restau info',
-                newRestaurant: updatePrismaRestaurant
-            }
+                newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
+            }   
         } catch (error) {
             console.log(error)
         }

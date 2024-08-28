@@ -16,7 +16,7 @@ export class MenuController {
         return this.menuService.getAllMenus(restaurantId, body)
     }
 
-    @Post('change-availability')
+    @Post('change-availability/:id')
     async ChangeAvailability(@Param('id') id: string, @Body() body: { available: boolean }) {
         return this.menuService.ChangeAvailability(id, body.available)
     }
@@ -32,13 +32,12 @@ export class MenuController {
         return this.menuService.GetMenuItem(id)
     }
 
-    @UseGuards(isBusinessOwner)
     @Delete(':id')
     async DeleteMenuItem(@Param('id') id: string, @Request() req: any) {
         return this.menuService.DeleteMenuItem(id)
     }
     
-    @UseGuards(isBusinessOwner)
+
     @Patch(':id') 
     async UpdateMenuItem(@Param('id') id: string, @Body() body: UpdateMenuDto) {
         return this.menuService.UpdateMenuItem(id, body)
