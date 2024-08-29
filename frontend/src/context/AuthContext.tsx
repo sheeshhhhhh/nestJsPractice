@@ -3,10 +3,19 @@ import { PropsWithChildren } from "react";
 import apiClient from "../util/apiClient";
 import { useLocalStorage } from "../util/localStorage";
 
+type UserInfo = {
+    profile?: string,
+    email?: string
+    address?: string
+}
+
 type User = {
     id: string
     name: string,
-    username: string
+    username: string,
+    oauthId?: string,
+    role: string,
+    userInfo: UserInfo
 }
 
 type ContextValue = {

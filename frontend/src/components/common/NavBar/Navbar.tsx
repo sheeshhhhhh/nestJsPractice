@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom"
-import { UserIcon } from 'lucide-react'
+import Profile from "./Profile"
+import { useAuthContext } from "../../../context/AuthContext"
 
 const Navbar = () => {
-    
+    const { user } = useAuthContext()
 
     return (
         <div className="mt-0 h-[60px] border mb-2 p-2">
@@ -11,7 +12,7 @@ const Navbar = () => {
                     <Link 
                     className="font-bold text-3xl"
                     to={'/'}>
-                        Recipe Verse
+                       Title Company
                     </Link>
                 </div>
 
@@ -21,9 +22,7 @@ const Navbar = () => {
 
                 <div>
                     {/* supposed to be profile */}
-                    <div className="size-[42px] flex justify-center items-center border border-1 rounded-full">
-                        <UserIcon size={30} />
-                    </div>
+                    {user && <Profile />}
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "../compone
 import { Input } from "../components/ui/input"
 import { ChangeEvent, useState } from "react"
 import { useLocalStorage } from "../util/localStorage"
-import { useSearchParams } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
 
 type loginInput = {
     username: string,
@@ -50,7 +50,7 @@ const Login = () => {
 
 
     return (
-        <div className="flex justify-center mt-[300px]">
+        <div className="flex justify-center mt-[250px]">
 
             <Card className="w-[400px]">
                 <CardHeader>
@@ -74,13 +74,22 @@ const Login = () => {
                     className="mt-3"
                     />
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="space-x-7">
                     <Button
                     disabled={isPending}
                     onClick={() => login()}
                     >
                         Login
                     </Button>
+
+                    <Link to={'http://localhost:3000/auth/google-login'}>
+                        <Button 
+                        className="w-[200px]"
+                        variant={'outline'} >
+                            Google
+                        </Button>
+                    </Link>
+
                 </CardFooter>
             </Card>
 
