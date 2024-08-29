@@ -41,12 +41,58 @@ export class AuthService {
     };
   }
 
+  async validateGoogle(user: any) {
+    try {
+      
+      const userPrisma = await this.prisma.user.findFirst({
+        where: {
+          oauthId: user.id
+        }
+      })
+
+      // if user does not exist in the database then it's his first time and we should make him an
+      // account
+      if(!userPrisma) {
+        const createUser = await this.prisma.$transaction(async txprisma => {
+          const createUser = await txprisma.user.create({
+            data: {
+              username: user.displayName,
+              name: user.displayName,
+              oauthId: user.id
+            }
+          })
+          
+          const createUserInfo = await txprisma.userInfo.create({
+            data: {
+                email: user.emails[0].value,
+                profile: user.photos[0].value,
+                userId: createUser.id
+            }
+          })
+
+          return {
+            ...createUser,
+            userInfo: createUserInfo
+          }
+        })
+
+        return this.login(createUser)
+      }
+
+      return this.login(userPrisma)
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException('error in the google auth')
+    }
+  }
+
   async login(user: any) {
     const payload = {
       username: user.username,
       name: user.name,
       sub: user.id,
-      role: user.role
+      role: user.role,
+      oauthId: user.oauthId
     };
     return {
       access_token: this.jwtService.sign(payload),
@@ -106,6 +152,7 @@ export class AuthService {
           username: true,
           id: true,
           name: true,
+          oauthId: true,
           role: true,
           userInfo: {
             select: {

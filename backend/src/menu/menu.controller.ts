@@ -36,7 +36,6 @@ export class MenuController {
     async DeleteMenuItem(@Param('id') id: string, @Request() req: any) {
         return this.menuService.DeleteMenuItem(id)
     }
-    
 
     @Patch(':id') 
     async UpdateMenuItem(@Param('id') id: string, @Body() body: UpdateMenuDto) {

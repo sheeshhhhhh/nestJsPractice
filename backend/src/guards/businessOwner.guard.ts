@@ -24,6 +24,10 @@ export class isBusinessOwner implements CanActivate {
             const userId = req.user.sub
             const businessId = req.params.id
             
+            if(!businessId) {
+                throw new Error("please make sure to make the params as id name of restaurant id")
+            }
+            
             const getRestaurant = await prisma.restaurant.findUniqueOrThrow({
                 where: {
                     id: businessId

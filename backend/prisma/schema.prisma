@@ -23,6 +23,7 @@ model User {
   username    String  @unique
   name        String
   password    String?
+  oauthId     String?
   userInfo    userInfo?
   restaurant  Restaurant?
   role        role @default(Customer)
@@ -51,6 +52,8 @@ enum businessStatus {
   Closed
 }
 
+// add logo later
+// and also other things for restaurant
 model Restaurant {
   id            String    @id @default(cuid())
   ownerId       String    @unique

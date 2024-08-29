@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, NotImplementedException } from '@nestjs/common';
 import { prisma } from 'prisma/db';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/CreateCategory.dto';
 import { Category, Prisma } from '@prisma/client';
@@ -20,7 +20,8 @@ export class CategoryService {
     async CreateCategory(restaurantId: string, { CategoryName } : CreateCategoryDto)
     : Promise<any | undefined> {
         try {
-            const createCategory =  await prisma.category.create({
+            const createCategory =  
+            await prisma.category.create({
                 data: {
                     restaurantId: restaurantId,
                     CategoryName: CategoryName
@@ -44,35 +45,51 @@ export class CategoryService {
     }
 
     async DeleteCategory(categoryId: string) {
-
-        const deleteCategory = await prisma.category.delete({
-            where: {
-                id: categoryId
+        try {
+            const deleteCategory = await prisma.category.delete({
+                where: {
+                    id: categoryId
+                }
+            }) 
+    
+            return {
+                success: true,
+                message: "category deleted",
+                deletedId: deleteCategory.id
             }
-        }) 
-
-        return {
-            success: true,
-            message: "category deleted",
-            deletedId: deleteCategory.id
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') {
+                    throw new NotFoundException("category does not exist!");
+                }
+            } else {
+                throw new InternalServerErrorException();
+            }
         }
     }
 
     async UpdateCategory(categoryId: string, { CategoryName }: UpdateCategoryDto) {
-
-        const updateCategory = await prisma.category.update({
-            where: {
-                id: categoryId
-            },
-            data: {
-                CategoryName: CategoryName
+        try {
+            const updateCategory = await prisma.category.update({
+                where: {
+                    id: categoryId
+                },
+                data: {
+                    CategoryName: CategoryName
+                }
+            })
+    
+            return {
+                success: true,
+                message: "category updated",
+                newCategory: updateCategory
             }
-        })
-
-        return {
-            success: true,
-            message: "category updated",
-            newCategory: updateCategory
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                console.log(error)
+            } else {
+                throw new InternalServerErrorException();
+            }
         }
     }
 
