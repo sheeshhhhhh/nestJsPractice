@@ -7,7 +7,7 @@ import CannotFind from './CannotFind'
 
 const Collection = () => {
     const [searchParams] = useSearchParams()
-    const search = searchParams.get('s')
+    const search = searchParams.get('s') || ''
 
     const { data, isLoading } = useQuery<RestaurantType[] | []>({
         queryKey: ['restaurants'],

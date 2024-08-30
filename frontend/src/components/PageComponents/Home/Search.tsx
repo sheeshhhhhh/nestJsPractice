@@ -14,11 +14,10 @@ const Search = () => {
     const changeSearchParams = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchParams({ s: e.target.value })
     }
-
-    const { mutate, data, isPending } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationKey: ['restaurant'],
         mutationFn: async () => {
-            const response = await apiClient.get(`/restaurant/GetManyRestaurants?search=${query}`)
+            const response = await apiClient.get(`/restaurant/GetManyRestaurants?search=${query || ''}`)
             return response.data
         },
         onError: (error) => {

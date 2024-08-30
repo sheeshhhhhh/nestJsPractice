@@ -14,6 +14,9 @@ type User = {
     name: string,
     username: string,
     oauthId?: string,
+    restaurant?: {
+        id?: string
+    }
     role: string,
     userInfo: UserInfo
 }
