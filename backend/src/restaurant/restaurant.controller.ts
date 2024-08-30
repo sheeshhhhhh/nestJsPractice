@@ -15,6 +15,10 @@ export class RestaurantController {
         private restaurantService: RestaurantService,
     ) {}
 
+    @Get('GetManyRestaurants')
+    async getManyRestaurant(@Query('search') search: string) {
+        return this.restaurantService.getManyRestaurant(search)
+    }
     // about restaurant
     @Get(':id')
     async getRestaurant(@Param('id') id: string, @Request() req: any) {

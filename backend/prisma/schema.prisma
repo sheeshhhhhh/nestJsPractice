@@ -41,6 +41,10 @@ model userInfo {
   profile   String?
   address   String?
 
+  // it should also containt this so that we can figure out if he's near the store
+  // latitude      Float
+  // longitude     Float
+
   user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   updatedAt DateTime @updatedAt

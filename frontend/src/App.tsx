@@ -16,9 +16,8 @@ function App() {
     return null
   }
 
-
   // implent check out page if not done with a modal 
-  // and also make sure to
+  // and also make sure to have global state variable
   return (
     <div>
       <Navbar />

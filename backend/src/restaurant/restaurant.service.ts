@@ -15,6 +15,30 @@ export class RestaurantService {
         }
     }
 
+    async getManyRestaurant(search?: string) {
+        try {
+
+            const restaurants = await prisma.restaurant.findMany({
+                where: {
+                    name: {
+                        contains: search,
+                        mode: 'insensitive'
+                    }
+                },
+                take: 12
+            })
+            
+            const Restaurants = restaurants?.map((item) => ({
+                ...item,
+                phoneNumber: Number(item.phoneNumber)
+            })) || []
+
+            return Restaurants
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
+    }
+
     async getRestaurant(req: any, id: string) {
         // get other info of restarant later like if following or not and 
         // also the purchase history from restaurant

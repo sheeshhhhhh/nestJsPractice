@@ -48,7 +48,6 @@ const Login = () => {
         }))
     }
 
-
     return (
         <div className="flex justify-center mt-[250px]">
 
@@ -73,6 +72,15 @@ const Login = () => {
                     type="text" 
                     className="mt-3"
                     />
+
+                    <p className="mt-1">
+                        Don't have an account? {" "}
+                        <Link 
+                        className="text-blue-700 underline-offset-2 hover:underline"
+                        to={`${import.meta.env.VITE_client_BASE_URL}/signup`}>
+                            Sign Up
+                        </Link>
+                    </p>
                 </CardContent>
                 <CardFooter className="space-x-7">
                     <Button

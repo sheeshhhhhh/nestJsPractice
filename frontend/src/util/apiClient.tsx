@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useLocalStorage } from './localStorage';
 
 const apiClient = axios.create({
-    baseURL: 'http://localhost:3000'
+    baseURL: import.meta.env.VITE_backendAPI_URL
 })
 
 apiClient.interceptors.request.use((config) => {

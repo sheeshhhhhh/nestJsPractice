@@ -41,10 +41,10 @@ export class AuthController {
     return this.authService.createUser(UserCreate);
   }
 
-  @Post('signUpRestaurantOwner') // for restaurant owner this is created
-  async createRestaurantOwner(@Body() OwnerCreate: OwnerCreateDto) {
-    return this.authService.createRestaurantOwner(OwnerCreate)
-  }
+  // @Post('signUpRestaurantOwner') // for restaurant owner this is created
+  // async createRestaurantOwner(@Body() OwnerCreate: OwnerCreateDto) {
+  //   return this.authService.createRestaurantOwner(OwnerCreate)
+  // }
   // implement settings later
 
   @UseGuards(JwtAuthGuard) // this is use for checking the user a lot of times
