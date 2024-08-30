@@ -102,7 +102,7 @@ export class AuthService {
   async createUser({ name, username, password, role }: UserCreateDto) {
     try {
       const hashPassword = await bcrypt.hash(password, 10);
-      await this.prisma.user.create({
+      const newUser = await this.prisma.user.create({
         data: {
           username,
           name,
@@ -111,10 +111,15 @@ export class AuthService {
         },
       });
 
-      return 'successfully created User';
+      return this.login(newUser)
     } catch (error) {
-      console.log(error.message);
-      throw new InternalServerErrorException('internal serve error');
+      if(error instanceof Prisma.PrismaClientKnownRequestError) {
+        if(error.code === 'P2002') {
+          throw new NotImplementedException('username already exist')
+        }
+      } else {
+        throw new InternalServerErrorException('internal serve error');
+      }
     }
   }
 
@@ -154,6 +159,11 @@ export class AuthService {
           name: true,
           oauthId: true,
           role: true,
+          restaurant: {
+            select: {
+              id: true
+            }
+          },
           userInfo: {
             select: {
               profile: true,

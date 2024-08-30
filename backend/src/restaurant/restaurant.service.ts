@@ -17,14 +17,23 @@ export class RestaurantService {
 
     async getManyRestaurant(search?: string) {
         try {
-
-            const restaurants = await prisma.restaurant.findMany({
-                where: {
+            const query: Prisma.RestaurantFindManyArgs = {
+                take: 12,
+            };
+            
+            if(search) { // for handling search and when there is no search because // it bugs
+                // when not done this way
+                query.where = {
                     name: {
                         contains: search,
-                        mode: 'insensitive'
-                    }
-                },
+                        mode: Prisma.QueryMode.insensitive,
+                    },
+                }
+    
+            }
+
+            const restaurants = await prisma.restaurant.findMany({
+                ...query,
                 take: 12
             })
             
