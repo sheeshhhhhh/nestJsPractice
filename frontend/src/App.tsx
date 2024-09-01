@@ -21,17 +21,17 @@ function App() {
     return null
   }
 
-  if(isBusinessRole) {
-    // pathname is important so that it will not loop to refreshing the page
-    // take him to page setup
-    if(location.pathname !== '/Dashboard' && user?.restaurant) {
-      return window.location.assign(import.meta.env.VITE_client_BASE_URL + "/Dashboard")
-    }
+  // if(isBusinessRole) {
+  //   // pathname is important so that it will not loop to refreshing the page
+  //   // take him to page setup
+  //   if(location.pathname !== '/Dashboard' && user?.restaurant) {
+  //     return window.location.assign(import.meta.env.VITE_client_BASE_URL + "/Dashboard")
+  //   }
 
-    if(location.pathname !== '/createRestaurant' && user?.restaurant === null) {
-      return window.location.assign(import.meta.env.VITE_client_BASE_URL+ "/createRestaurant")
-    }
-  }
+  //   if(location.pathname !== '/createRestaurant' && user?.restaurant === null) {
+  //     return window.location.assign(import.meta.env.VITE_client_BASE_URL+ "/createRestaurant")
+  //   }
+  // }
 
   
   return (
