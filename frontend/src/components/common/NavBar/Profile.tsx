@@ -9,10 +9,12 @@ import {
 } from "../../ui/sheet"
 import { Button } from "../../ui/button"
 import { LogOutIcon } from "lucide-react"
+import { useLocation } from "react-router-dom"
   
 // this also contains the routing of the navigation for the user
 const Profile = () => {
     const { user } = useAuthContext()
+    const location = useLocation()
 
     return (
         <Sheet>
@@ -41,7 +43,7 @@ const Profile = () => {
                     <Button 
                     onClick={() => {
                         localStorage.removeItem('access_token')
-                        window.location.assign('http://localhost:5173')
+                        window.location.assign(`http://localhost:5173/login?next=${location.pathname}`)
                     }}
                     variant={'ghost'} 
                     className="flex justify-start items-center"

@@ -4,13 +4,16 @@ import Form from '../components/PageComponents/CreateRestaurant/Form'
 
 const CreateRestaurant = () => {
     const { user } = useAuthContext()
-    // if user already has a restaurant 
-    if(user?.restaurant?.id) return <Navigate to={'/restaurantDashboard'} />
+    // if user already has a restaurant then redirect 
+    if(user?.restaurant?.id) return <Navigate to={'/Dashboard'} />
+
+    const redirect = () => {
+        return <Navigate to={'/Dashboard'} />
+    }
 
     return (
         <div>
-            
-            <Form />
+            <Form callBackFunction={redirect} />
         </div>
     )
 }

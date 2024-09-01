@@ -55,6 +55,7 @@ export const AuthContextProvider = ({ children } : PropsWithChildren) => {
                     }
                 })
                 if(user) {
+                    // verify role
                     setUser(user.data)
                 }
         

@@ -23,11 +23,13 @@ export type FormRestaurant = {
 } 
 
 type FormProps = {
-    initialValues?: RestaurantInfo
+    initialValues?: RestaurantInfo,
+    callBackFunction?: () => void
 }
 
 const Form = ({
-    initialValues // handle default values // for editing info8
+    initialValues, // handle default values // for editing info
+    callBackFunction
 } : FormProps) => {
     const { register, handleSubmit, formState: { errors, isLoading } } = useForm<FormRestaurant>({
     })
@@ -56,7 +58,7 @@ const Form = ({
                 }
             }
         )
-        console.log(response)   
+        callBackFunction && callBackFunction() // if it exist then just run it
     }
 
     return (

@@ -7,40 +7,82 @@ import Home from './Pages/Home'
 import Navbar from './components/common/NavBar/Navbar'
 import GoogleAuth from './Pages/Google-Auth'
 import CreateRestaurant from './Pages/CreateRestaurant'
-
+import RestaurantDashboard from './Pages/RestaurantDashboard'
+import PrivateRouteComponent from './components/common/PrivateRouteComponent'
+import RestrictedAccess from './Pages/RestrictedAccess'
 
 function App() {
   const location = useLocation()
   const { user, loading } = useAuthContext()
 
   const loginLink = `/login?next=${location.pathname}`
-
+  const isBusinessRole = user && user?.role === 'Business'
   if(loading) {
     return null
   }
 
-  // pathname is important so that it will not loop to refreshing the page
-  if(user?.restaurant === null && location.pathname !== '/createRestaurant') {
+  if(isBusinessRole) {
+    // pathname is important so that it will not loop to refreshing the page
     // take him to page setup
-    return window.location.assign(import.meta.env.VITE_client_BASE_URL+ "/createRestaurant")
+    if(location.pathname !== '/Dashboard' && user?.restaurant) {
+      return window.location.assign(import.meta.env.VITE_client_BASE_URL + "/Dashboard")
+    }
+
+    if(location.pathname !== '/createRestaurant' && user?.restaurant === null) {
+      return window.location.assign(import.meta.env.VITE_client_BASE_URL+ "/createRestaurant")
+    }
   }
 
-  // implent check out page if not done with a modal 
-  // and also make sure to have global state variable
+  
   return (
     <div>
       <Navbar />
       <Routes>
+        {/* this is for user */}
+        <Route path="*" element={<h2>Not Found</h2>} />
+        <Route path='/restrictedAccess' element={<RestrictedAccess />} />
         <Route path='/login' element={!user ? <Login /> : <Navigate to={`/`} />} />
         <Route path='/signup' element={!user ? <SignUp /> : <Navigate to={`/`} />} />
-        <Route path='/' element={user ? <Home /> : <Navigate to={`/login?next=${location.pathname}`} />} />
-        <Route path='/restaurant/:id' element={user ? undefined : <Navigate to={loginLink} />} />
-        <Route path='/menu/:id' element={user ? undefined : <Navigate to={loginLink} />} />
-        <Route path='/setting' element={user ? undefined : <Navigate to={loginLink} />} />
-        <Route path='/orderHistory' element={user ? undefined : <Navigate to={loginLink} />} />
         <Route path='/google-auth' element={<GoogleAuth />} />
 
-        <Route path='/createRestaurant' element={user ? <CreateRestaurant /> : <Navigate to={loginLink} />} />
+        <Route path='/' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            <Home />
+          </PrivateRouteComponent>
+        } />
+        <Route path='/restaurant/:id' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            {undefined}
+          </PrivateRouteComponent>
+        } />
+
+        <Route path='/menu/:id' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            {undefined}
+          </PrivateRouteComponent>
+        } />
+        <Route path='/setting' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            {undefined}
+          </PrivateRouteComponent>
+        } />
+        <Route path='/orderHistory' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            {undefined}
+        </PrivateRouteComponent>
+        } />
+
+        {/* for restaurant owners */} 
+        <Route path='/createRestaurant' element={
+          <PrivateRouteComponent role={['Business']} userRole={user?.role} >
+            <CreateRestaurant />
+          </PrivateRouteComponent>
+        }/> 
+        <Route path='/Dashboard/*' element={
+          <PrivateRouteComponent role={['Business']} userRole={user?.role} >
+            <RestaurantDashboard />
+          </PrivateRouteComponent>
+        } />
       </Routes>
     </div>
   )
