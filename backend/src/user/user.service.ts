@@ -58,7 +58,7 @@ export class UserService {
   async changeAvatar(req: any, file: Express.Multer.File) {
     const userId = req.user.sub;
     const fileInfo = file;
-    const profileLink = 'http://localhost:3000/public/' + fileInfo.filename;
+    const profileLink = process.env.BASE_URL + '/public/' + fileInfo.filename;
 
     // add delete profile later // it should be use when a user already has profile so that we don't have
     // profile that is not being used

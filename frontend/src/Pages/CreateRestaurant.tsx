@@ -9,6 +9,7 @@ const CreateRestaurant = () => {
 
     return (
         <div>
+            
             <Form />
         </div>
     )

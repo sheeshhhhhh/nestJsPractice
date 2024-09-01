@@ -65,7 +65,7 @@ export class RestaurantService {
 
     async createRestaurant(req: any, { name, address, description, email,
     phoneNumber, latitude, longitude, openingHours, cuisineType, DeliveryRange 
-    }: createRestaurantDto) {
+    }: createRestaurantDto, file: Express.Multer.File) {
         try {
             if(req.user.role !== 'Business') {
                 console.log('is not business owner')
@@ -74,6 +74,7 @@ export class RestaurantService {
 
             const userId = req.user.sub
             const DeliveriRange = DeliveryRange || "3km"
+            const headerPhotoFile = process.env.BASE_URL + '/HeaderPhoto/' + file.filename
             const openinghours = openingHours || {
                 open : "8am",
                 closed : "9pm"
@@ -84,12 +85,13 @@ export class RestaurantService {
                     ownerId: userId,
                     name: name,
                     address: address,
+                    HeaderPhoto: headerPhotoFile,
                     description: description,
                     email: email,
-                    phoneNumber: phoneNumber || 8312313254,
+                    phoneNumber: Number(phoneNumber) || 8312313254,
                     //location
-                    latitude: latitude,
-                    longitude: longitude,
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude),
                     // delivery info
                     openingHours: openinghours,
                     cuisineType: cuisineType || '',
@@ -139,23 +141,23 @@ export class RestaurantService {
 
     async updateRestaurant(req: any, id: string, body: updateRestaurantDto) {
         try {
-            const userId = req.user.sub
+            // const userId = req.user.sub
 
-            // updating the restaurant // just updating what is needed
-            const updatePrismaRestaurant = await prisma.restaurant.update({
-                where: {
-                    id: id
-                },
-                data: {
-                    ...body
-                }
-            })
+            // // updating the restaurant // just updating what is needed
+            // const updatePrismaRestaurant = await prisma.restaurant.update({
+            //     where: {
+            //         id: id
+            //     },
+            //     data: {
+            //         ...body
+            //     }
+            // })
             
-            return {
-                success: true,
-                message: 'successfully changed restau info',
-                newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
-            }   
+            // return {
+            //     success: true,
+            //     message: 'successfully changed restau info',
+            //     newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
+            // }   
         } catch (error) {
             console.log(error)
         }

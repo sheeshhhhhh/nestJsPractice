@@ -5,9 +5,9 @@ export class createRestaurantDto {
     address: string;
     description?: string;
     email: string;
-    phoneNumber: number;
-    latitude?: number;
-    longitude?: number;
+    phoneNumber: string; // supposed to be number
+    latitude?: string; // supposed to be number
+    longitude?: string;
     openingHours: any;
 
     cuisineType?: string;

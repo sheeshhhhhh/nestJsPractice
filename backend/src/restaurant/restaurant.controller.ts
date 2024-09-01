@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RestaurantService } from './restaurant.service';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
@@ -7,6 +7,8 @@ import { MenuService } from 'src/menu/menu.service';
 import { isBusinessOwner } from 'src/guards/businessOwner.guard';
 import { UpdateMenuDto } from 'src/menu/dto/UpdateMenu.dtio';
 import { CreateMenuDto } from 'src/menu/dto/CreateMenu.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import diskMulterStorage from 'src/util/discMulterStorage';
 
 @UseGuards(JwtAuthGuard)
 @Controller('restaurant')
@@ -25,9 +27,15 @@ export class RestaurantController {
         return this.restaurantService.getRestaurant(req, id)
     }
 
-    @Post()
-    async createRestaurant(@Request() req: any, @Body() body: createRestaurantDto) {
-        return this.restaurantService.createRestaurant(req, body)
+    @Post() // later on add Header photo for restaurants // nest js multer
+    @UseInterceptors(
+        FileInterceptor('HeaderPhoto', {
+            storage: diskMulterStorage('uploads/RestaurantHeaderPhoto')
+        })
+    )
+    async createRestaurant(@Request() req: any, @Body() body: createRestaurantDto,
+    @UploadedFile() file: Express.Multer.File) {
+        return this.restaurantService.createRestaurant(req, body, file)
     }
 
     @UseGuards(isBusinessOwner)

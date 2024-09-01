@@ -7,9 +7,14 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  
   app.useStaticAssets(join(__dirname, '../..', 'uploads/Avatar'), {
     prefix: '/public/',
   });
+  app.useStaticAssets(join(__dirname, '../..', 'uploads/RestaurantHeaderPhoto'), {
+    prefix: '/HeaderPhoto'
+  })
+
   app.enableCors({
     origin: 'http://localhost:5173', // Specify your frontend origin
     methods: 'GET,POST,PUT,DELETE', // Allowed methods

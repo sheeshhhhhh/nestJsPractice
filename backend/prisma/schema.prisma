@@ -63,6 +63,7 @@ model Restaurant {
   ownerId       String    @unique
   name          String
   address       String
+  HeaderPhoto   String
   description   String?
   email         String // this is needed because userInfo is not gonna exist on businesses // also use for notification
   phoneNumber   BigInt
