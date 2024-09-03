@@ -7,13 +7,9 @@ const CreateRestaurant = () => {
     // if user already has a restaurant then redirect 
     if(user?.restaurant?.id) return <Navigate to={'/Dashboard'} />
 
-    const redirect = () => {
-        return <Navigate to={'/Dashboard'} />
-    }
-
     return (
         <div>
-            <Form callBackFunction={redirect} />
+            <Form />
         </div>
     )
 }

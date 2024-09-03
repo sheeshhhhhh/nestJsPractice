@@ -5,6 +5,27 @@ import { Category, Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoryService {
+ 
+
+    async searchCategory(restaurantId: string, search: string) {
+        const query = search ? {
+            CategoryName: {
+                contains:  search || '',
+                mode: 'insensitive' as Prisma.QueryMode
+            }
+        } : {}
+
+        const GetCategories = await prisma.category.findMany({
+            where: {
+                AND: {
+                    ...query,
+                    restaurantId: restaurantId
+                }
+            }
+        })
+
+        return GetCategories
+    }
 
     // mainly for editing categories
     async GetCategories(restaurantId: string): Promise<Category[] | undefined> {

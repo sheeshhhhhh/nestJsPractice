@@ -10,6 +10,7 @@ import CreateRestaurant from './Pages/CreateRestaurant'
 import RestaurantDashboard from './Pages/RestaurantDashboard'
 import PrivateRouteComponent from './components/common/PrivateRouteComponent'
 import RestrictedAccess from './Pages/RestrictedAccess'
+import UpdateRestaurant from './Pages/UpdateRestaurant'
 
 function App() {
   const location = useLocation()
@@ -83,6 +84,12 @@ function App() {
             <RestaurantDashboard />
           </PrivateRouteComponent>
         } />
+        <Route path='/updateRestaurant' element={
+          <PrivateRouteComponent role={['Business']} userRole={user?.role} >
+          <UpdateRestaurant />
+        </PrivateRouteComponent>
+        } 
+        />
       </Routes>
     </div>
   )

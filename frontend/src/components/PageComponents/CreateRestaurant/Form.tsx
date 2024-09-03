@@ -1,4 +1,4 @@
-import { RestaurantInfo, RestaurantLocation } from "../../../types/restaurant.types"
+import { FormRestaurant, RestaurantInfo, RestaurantLocation } from "../../../types/restaurant.types"
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { Input } from "../../ui/input"
 import { Button } from "../../ui/button"
@@ -10,29 +10,13 @@ import toast from "react-hot-toast"
 import apiClient from "../../../util/apiClient"
 import { Label } from "../../ui/label"
 import FormDataSetter from "./FormData.Setter"
+import { Navigate } from "react-router-dom"
 
-export type FormRestaurant = {
-    name: string,
-    address: string,
-    description?: string,
-    email: string,
-    phoneNumber: number,
 
-    cuisineType?: string,
-    DeliveryRange: string,
-} 
 
-type FormProps = {
-    initialValues?: RestaurantInfo,
-    callBackFunction?: () => void
-}
 
-const Form = ({
-    initialValues, // handle default values // for editing info
-    callBackFunction
-} : FormProps) => {
-    const { register, handleSubmit, formState: { errors, isLoading } } = useForm<FormRestaurant>({
-    })
+const Form = () => {
+    const { register, handleSubmit, formState: { errors, isLoading } } = useForm<FormRestaurant>()
     const [file, setFile] = useState<any>()
     const [latlng, setLatLng] = useState<Partial<RestaurantLocation>>({
         latitude: undefined, // 14.821306677310664
@@ -58,7 +42,8 @@ const Form = ({
                 }
             }
         )
-        callBackFunction && callBackFunction() // if it exist then just run it
+        return <Navigate to={'/Dashboard'} />
+       
     }
 
     return (

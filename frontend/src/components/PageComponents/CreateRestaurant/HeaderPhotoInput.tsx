@@ -27,7 +27,6 @@ const HeaderPhotoInput = ({
     const [previewFile, setPreviewFile] = useState<any>(initialHeaderPhoto || undefined)
 
     //Size Configs
-
     const Size = size || {
         height: 170,
         width: 320
@@ -37,13 +36,13 @@ const HeaderPhotoInput = ({
     return (
         <div 
         style={{
-            height: Size.height + 'px',
+            height: (Size.height + 30) + 'px',
             width: Size.width + 'px'
         }}
         className={`mx-auto`}>
             <div>
                 {
-                    previewFile &&
+                    (previewFile || file) &&
                     (
                         <div 
                         style={{
@@ -56,12 +55,12 @@ const HeaderPhotoInput = ({
                                 width: Size.width,
                                 height: Size.height,
                             }}
-                            src={previewFile} />
+                            src={previewFile || file} />
                         </div>
                     ) 
                 }
             </div>
-            {!previewFile && <label 
+            {!previewFile && !file && <label 
             style={{
                 height: Size.height + 'px',
                 width: Size.width + 'px'
@@ -75,10 +74,14 @@ const HeaderPhotoInput = ({
                     width: Size.width + 'px'
                 }}
                 className={`rounded-lg border-2 border-muted-foreground border-dashed
-                flex justify-center items-center`}>
+                flex flex-col gap-2 justify-center items-center`}>
                     <UploadIcon 
-                    className={`size-[${IconSize}px] text-muted-foreground`}
+                    size={IconSize}
+                    className={`text-muted-foreground`}
                     />
+                    <h2 className="font-medium text-xl">
+                        Upload
+                    </h2>
                 </div>
                 <input 
                 onChange={(e) => handleFileChange(e, setFile, setPreviewFile)}
@@ -89,12 +92,16 @@ const HeaderPhotoInput = ({
 
             <div aria-label="footer">
                 {
-                file &&
-                <Button 
-                className="w-[120px]"
-                variant={'destructive'}>
-                    Remove
-                </Button> 
+                    file &&
+                    <Button 
+                    onClick={() => {
+                        setFile('')
+                        setPreviewFile('')
+                    }}
+                    className="w-[120px]"
+                    variant={'destructive'}>
+                        Remove
+                    </Button> 
                 }
             </div>
         </div>

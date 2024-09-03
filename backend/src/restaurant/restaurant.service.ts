@@ -1,7 +1,7 @@
-import { Injectable, InternalServerErrorException, NotImplementedException, UnauthorizedException } from '@nestjs/common';
-import { createRestaurantDto } from './dto/CreateRestaurant.dto';
-import { prisma } from 'prisma/db';
+import { Injectable, InternalServerErrorException, NotAcceptableException, NotImplementedException, UnauthorizedException } from '@nestjs/common';
 import { Prisma, Restaurant } from '@prisma/client';
+import { prisma } from 'prisma/db';
+import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 
 @Injectable()
@@ -139,27 +139,55 @@ export class RestaurantService {
         }
     }
 
-    async updateRestaurant(req: any, id: string, body: updateRestaurantDto) {
+    async updateRestaurant(req: any, id: string, {
+        name, description, email, phoneNumber, latitude, longitude,
+        openingHours,cuisineType, DeliveryRange, address
+    }: updateRestaurantDto, file: Express.Multer.File) {
         try {
-            // const userId = req.user.sub
-
-            // // updating the restaurant // just updating what is needed
-            // const updatePrismaRestaurant = await prisma.restaurant.update({
-            //     where: {
-            //         id: id
-            //     },
-            //     data: {
-            //         ...body
-            //     }
-            // })
+            const userId = req.user.sub
             
-            // return {
-            //     success: true,
-            //     message: 'successfully changed restau info',
-            //     newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
-            // }   
+            if(!phoneNumber || !latitude || !longitude) {
+                throw new NotAcceptableException("something required is missing")
+            }
+
+            const phonenumber = parseInt(phoneNumber)
+            const updatedLatitude =parseFloat(latitude)
+            const updatedLongitude = parseFloat(longitude)
+
+            //handling change of Headerphoto
+            let headerPhoto; 
+            if(file) {
+                headerPhoto = file.filename ? {
+                    HeaderPhoto: process.env.BASE_URL + '/HeaderPhoto/' + file.filename
+                } : {}
+            }
+
+            const updatePrismaRestaurant = await prisma.restaurant.update({
+                where: {
+                    id: id
+                },
+                data: {
+                    name,
+                    description: description || '',
+                    email,
+                    address,
+                    ...headerPhoto,
+                    phoneNumber: phonenumber,
+                    latitude: updatedLatitude,
+                    longitude: updatedLongitude,
+                    openingHours: openingHours,
+                    cuisineType,
+                    DeliveryRange
+                }
+            })
+            
+            return {
+                success: true,
+                message: 'successfully changed restau info',
+                newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
+            }   
         } catch (error) {
-            console.log(error)
+            throw new InternalServerErrorException()
         }
     }
 }

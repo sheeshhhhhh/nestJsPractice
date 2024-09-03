@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Get, Patch, Delete, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Get, Patch, Delete, UseGuards, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/CreateCategory.dto';
 import { isBusinessOwner } from 'src/guards/businessOwner.guard';
@@ -9,6 +9,14 @@ import { isOwner } from 'src/guards/Owner.guard';
 @Controller('category')
 export class CategoryController {
     constructor(private categoryService: CategoryService) {}
+    
+    @Post('searchCategory/:restaurantId')
+    async searchCategory(
+        @Param('restaurantId') restaurantId: string,
+        @Body() body: {search: string}
+    ) {
+        return this.categoryService.searchCategory(restaurantId, body.search)
+    }
 
     @Get(':restaurantId')
     async GetCategories(@Param('restaurantId') restaurantId: string) {

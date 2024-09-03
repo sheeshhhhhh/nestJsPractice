@@ -22,12 +22,11 @@ const GoogleMaps = ({
         lat: latlng.latitude || 0,
         lng: latlng.longitude || 0
     })
-
     const latlngExist = latlng.latitude && latlng.longitude 
     const mapCenter = latlngExist ? 
     [latlng.latitude, latlng.longitude] as LatLngExpression // if defined then set
     : center as LatLngExpression // if not then set center default
-
+    
     const MapClickHandler = () => {
         // for handling the marker
         useMapEvent('click', (e) => {

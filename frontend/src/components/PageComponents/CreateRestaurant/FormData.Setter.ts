@@ -1,20 +1,22 @@
 import toast from "react-hot-toast"
-import { RestaurantLocation } from "../../../types/restaurant.types"
-import { FormRestaurant } from "./Form"
+import { FormRestaurant, openingHours, RestaurantLocation } from "../../../types/restaurant.types"
+
 
 type FormDataSetterParams = {
-  HeaderPhoto: any
-} & FormRestaurant & Partial<RestaurantLocation>
+  HeaderPhoto: any,
+  openingHours?: openingHours
+} & FormRestaurant & Partial<RestaurantLocation> 
 
 const FormDataSetter = ({
   name, address, description, email, phoneNumber, cuisineType, DeliveryRange,
-  latitude, longitude, HeaderPhoto
+  latitude, longitude, HeaderPhoto, openingHours
 } : FormDataSetterParams) => {
 
   if(!latitude || !longitude) {
-    return toast.error('please select your location in the map')
-}
-
+    toast.error('error please refresh the page')
+    throw new Error('latitude and longitude is missing') 
+  }
+  console.log(openingHours)
   const formData = new FormData()
   formData.append('name', name)
   formData.append('address', address)
@@ -23,8 +25,12 @@ const FormDataSetter = ({
   formData.append('email', email)
   cuisineType && formData.append('cuisineType', cuisineType)
   formData.append('DeliveryRange', DeliveryRange)
+
   formData.append('latitude', latitude.toString())
   formData.append('longitude', longitude.toString())
+
+  formData.append('openingHours', JSON.stringify(openingHours))
+
   formData.append('HeaderPhoto', HeaderPhoto)
   
   return formData

@@ -14,7 +14,7 @@ const Category = () => {
         this is all the categories the user can choose from and where you can add all your 
         menu items. this is a good way to organize your food and satisfy the customers!
       </p>
-      <CategoryHeader  />
+      <CategoryHeader />
       <CategoriesCollection />
     </div>
   )

@@ -13,10 +13,10 @@ const RestaurantDashboard = () => {
     if(!user?.restaurant?.id) return <Navigate to={'/createRestaurant'} />
 
     return (
-        <div className='min-h-[884px] max-w-[1400px] w-full p-8 flex mx-auto'>
+        <div className='min-h-[884px] max-w-[1400px] w-full h-auto p-8 flex mx-auto relative'>
             <RestaurantNavigation />
             <Separator orientation='vertical' className='w-[2px] h-[684px] mx-5' />
-            <div className='w-full max-w-[1084px] h-auto'>
+            <div className='w-full h-auto'>
                 <Routes>
                     <Route path={'dashboard'}       element={<Dashboard />} />
                     <Route path={'settings'}        element={<Settings />} />

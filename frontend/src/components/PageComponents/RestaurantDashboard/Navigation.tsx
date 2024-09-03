@@ -11,7 +11,7 @@ const RestaurantNavigation = () => {
     }
 
     return (
-        <div className='flex flex-col gap-1 items-start max-w-[300px] mt-5'>
+        <div className='flex flex-col gap-1 items-start max-w-[300px] mt-5 sticky top-0'>
             <Link 
             className='text-4xl font-bold mb-9'
             to={'dashboard'}>

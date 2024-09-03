@@ -46,8 +46,17 @@ export class RestaurantController {
 
     @UseGuards(isBusinessOwner)
     @Patch(':id')
+    @UseInterceptors(
+        FileInterceptor('HeaderPhoto', {
+            storage: diskMulterStorage('uploads/RestaurantHeaderPhoto')
+        })
+    )
     async updateRestaurant(@Param('id') id: string, @Request() req: any, 
-    @Body() body: updateRestaurantDto) {
-        return this.restaurantService.updateRestaurant(req, id, body)
+    @Body() body: updateRestaurantDto, @UploadedFile() file: Express.Multer.File) {
+        body = {
+            ...body,
+            openingHours: JSON.parse(body.openingHours)
+        }
+        return this.restaurantService.updateRestaurant(req, id, body, file)
     }
 }

@@ -17,7 +17,7 @@ export type RestaurantLocation = {
 export type RestaurantInfo = {
     id: string,
     ownerId: string,
-    // HeaderPhoto: string
+    HeaderPhoto: string
     name: string,
     address: string,
     description?: string,
@@ -38,5 +38,22 @@ export type category = {
     restaurantId?: string 
 }
 
+export type RestaurantOpeningHours = {
+    closed: string,
+    open: string
+}
+
 export type Restaurant = {
-} & RestaurantInfo & RestaurantLocation
+    openingHours: RestaurantOpeningHours
+} & RestaurantInfo & RestaurantLocation 
+
+export type FormRestaurant = {
+    name: string,
+    address: string,
+    description?: string,
+    email: string,
+    phoneNumber: number,
+
+    cuisineType?: string,
+    DeliveryRange: string,
+} 

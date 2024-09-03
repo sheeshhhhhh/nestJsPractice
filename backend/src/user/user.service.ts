@@ -1,5 +1,6 @@
 import {
   Injectable,
+  InternalServerErrorException,
   NotAcceptableException,
   NotFoundException,
   NotImplementedException,
@@ -31,14 +32,14 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('user not found');
     }
-
+    
     const verifyPassword = bcrypt.compareSync(password, user.password);
     if (!verifyPassword) {
       throw new UnauthorizedException('wrong password');
     }
 
     // update password
-    const hashNewPassword = bcrypt.hashSync(password, 10); // hash the new password
+    const hashNewPassword = bcrypt.hashSync(newPassword, 10); // hash the new password
     const updatePassword = await prisma.user.update({
       where: {
         id: userId,
@@ -113,6 +114,8 @@ export class UserService {
         if (error.code === 'P2002') {
           throw new NotImplementedException('username already exist!');
         }
+      } else {
+        throw new InternalServerErrorException()
       }
     }
   }
