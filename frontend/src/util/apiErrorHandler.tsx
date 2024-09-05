@@ -5,7 +5,7 @@ type apiErrorHandlerParams = {
     status?: number,
     message?: string
 }
-
+// add later a lot of continals
 const apiErrorHandler = async ({
     error, status, message
 }: apiErrorHandlerParams) => {

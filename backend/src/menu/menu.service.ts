@@ -1,13 +1,12 @@
-import { Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { prisma } from '../../prisma/db'
 import { CreateMenuDto } from './dto/CreateMenu.dto';
 import { UpdateMenuDto } from './dto/UpdateMenu.dtio';
 import { getAllMenusDto } from './dto/getAllMenus.dto';
-import { CategoryService } from 'src/category/category.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class MenuService {
-    constructor(private categoryService: CategoryService) {}
 
     async getAllMenus(restaurantId: string, { category }: getAllMenusDto) {
 
@@ -19,6 +18,9 @@ export class MenuService {
                         CategoryName: category 
                     }}
                 ]
+            },
+            include: {
+                category: true
             }
         })
 
@@ -31,12 +33,44 @@ export class MenuService {
             where: {
                 id: id
             },
-             data: {
+            data: {
                 availability: isAvailable
-             }
+            },
+            include: {
+                category: true
+            }
         })
 
         return updateAvailability
+    }
+
+    async SearchMenu(search: string, restaurantId: string) {
+        const query = search ? {
+            OR: [
+                {name: {
+                contains:  search,
+                mode: Prisma.QueryMode.insensitive
+                }},
+                {category: {
+                    CategoryName: {
+                        contains: search,
+                        mode: Prisma.QueryMode.insensitive
+                    }
+                }}
+            ]
+        } : {}
+
+        const getMenuSearch = await prisma.menu.findMany({
+            where: {
+                ...query,
+                restaurantId: restaurantId
+            },
+            include: {
+                category: true
+            }
+        })
+        
+        return getMenuSearch;
     }
 
     async GetMenuItem(id: string) {
@@ -51,54 +85,35 @@ export class MenuService {
     }
 
     async CreateMenuItem(req: any, {
-        name, description, price, category, availability,
-        restaurantId
+        name, description, price, availability,
+        categoryId, restaurantId
     } : CreateMenuDto) {
         if(req.user.role !== 'Business') {
             throw new UnauthorizedException("only business owner can create menu")
         }
 
-        const userId = req.user.sub
         const Availability = availability || false // default is false
 
-        const createPrismaMenu = await prisma.$transaction(async txprisma => {
-            const CreateCategory = await txprisma.category.findUnique({
-                where: {    
-                    CategoryName_restaurantId: {
-                        CategoryName: category,
-                        restaurantId: restaurantId
-                    }
-                }
-            })
+        if(!categoryId) throw new BadRequestException('category is required')
 
-            if(!CreateCategory) return false
-
-            const createMenu = await txprisma.menu.create({
-                data: {
-                    name: name,
-                    description: description || '',
-                    price: price,
-                    categoryId: CreateCategory.id,
-                    availability: Availability,
-                    restaurantId: restaurantId
-                },
-                include: {
-                    category: true
-                }
-            })
-
-            return createMenu
+        const createMenu = await prisma.menu.create({
+            data: {
+                name: name,
+                description: description || '',
+                price: price,
+                categoryId: categoryId,
+                availability: Availability,
+                restaurantId: restaurantId
+            },
+            include: {
+                category: true
+            }
         })
-
-        if(createPrismaMenu === false) return {
-            success: false,
-            message: "such category does not exist"
-        }
 
         return {
             success: true,
             message: 'successfully created menu',
-            newMenu: createPrismaMenu
+            newMenu: createMenu
         }
     }
 
@@ -114,18 +129,25 @@ export class MenuService {
 
         return {
             success: true,
-            message: "menu deleted"
+            message: "menu deleted",
+            deletedId: deletePrismaMenu.id
         }
     }
 
-    async UpdateMenuItem(id: string, body: UpdateMenuDto) {
-
+    async UpdateMenuItem(id: string, {
+        name, description, price, availability
+    }: UpdateMenuDto) {
+        console.log(id)
+        
         const updatePrismaMenu = await prisma.menu.update({
             where: {
                 id: id
             },
             data: {
-                ...body
+                availability,
+                name,
+                description,
+                price
             }
         })
 

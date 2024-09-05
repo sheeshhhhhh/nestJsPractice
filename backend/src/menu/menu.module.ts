@@ -4,7 +4,6 @@ import { MenuController } from './menu.controller';
 import { CategoryModule } from 'src/category/category.module';
 
 @Module({
-  imports: [CategoryModule],
   providers: [MenuService],
   controllers: [MenuController]
 })

@@ -1,4 +1,5 @@
 import {
+  GoneException,
   Injectable,
   InternalServerErrorException,
   NotAcceptableException,
@@ -14,6 +15,7 @@ import { changeUserInfoDto } from './dto/ChangeUserInfo';
 
 @Injectable()
 export class UserService {
+
   async changePassword(
     { password, newPassword, confirmPassword }: changePasswordDto,
     req: any,
@@ -191,4 +193,32 @@ export class UserService {
       newAddress: changeAddress.address
     }
   }
+
+  async deleteUser(req: any)  {
+    try {
+      const userId = req.user.id;
+
+      // decide if it's better to preserve the restaurant in history instead of giving it in 
+      // it will be automatically delete anyway because of cascade delete
+      const deleteUser = await prisma.user.delete({
+        where: {
+          id: userId
+        }
+      })
+
+      if(!deleteUser) {
+        throw new GoneException('failed to delete')
+      }
+
+      return {
+        success: true,
+        message: "Successfully deleted user",
+        userId: deleteUser.id
+      }
+
+    } catch (error) {
+      throw new InternalServerErrorException("internal server error")
+    }
+  }
+
 }

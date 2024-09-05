@@ -16,7 +16,7 @@ import { Navigate } from "react-router-dom"
 
 
 const Form = () => {
-    const { register, handleSubmit, formState: { errors, isLoading } } = useForm<FormRestaurant>()
+    const { register, handleSubmit, getValues, formState: { errors, isLoading } } = useForm<FormRestaurant>()
     const [file, setFile] = useState<any>()
     const [latlng, setLatLng] = useState<Partial<RestaurantLocation>>({
         latitude: undefined, // 14.821306677310664
@@ -154,7 +154,10 @@ const Form = () => {
 
                 {/* implement map here later */}
                 <div className="h-[350px] w-[500px]">
-                    <GoogleMaps latlng={latlng} setLatLng={setLatLng} />
+                    <GoogleMaps 
+                    RestaurantName={getValues('name')}
+                    latlng={latlng} 
+                    setLatLng={setLatLng} />
                 </div>
 
                 <Button

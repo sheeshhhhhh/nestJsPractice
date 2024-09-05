@@ -80,7 +80,10 @@ const UpdateForm = ({
             />
             {/* implement map here later */}
             <div className="h-[350px] w-[500px]">
-                <GoogleMaps latlng={latlng} setLatLng={setLatLng} />
+                <GoogleMaps 
+                RestaurantName={restaurantInfo.name}
+                latlng={latlng} 
+                setLatLng={setLatLng} />
             </div>
             <Button
             className="mt-5"

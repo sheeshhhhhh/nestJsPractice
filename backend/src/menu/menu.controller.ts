@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/CreateMenu.dto';
 import { UpdateMenuDto } from './dto/UpdateMenu.dtio';
@@ -21,6 +21,11 @@ export class MenuController {
         return this.menuService.ChangeAvailability(id, body.available)
     }
 
+    @Get('searchMenu')
+    async SearchMenu(@Query() query: { search: string, restaurantId?: string }) {
+        return this.menuService.SearchMenu(query.search, query.restaurantId)
+    }
+
     // about menu
     @Post() 
     async CreateMenuItem(@Request() req: any, @Body() body: CreateMenuDto) {
@@ -39,6 +44,7 @@ export class MenuController {
 
     @Patch(':id') 
     async UpdateMenuItem(@Param('id') id: string, @Body() body: UpdateMenuDto) {
+        console.log(body)
         return this.menuService.UpdateMenuItem(id, body)
     }
 

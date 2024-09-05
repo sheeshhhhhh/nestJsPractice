@@ -15,3 +15,11 @@ export type MenuInfo ={
 
     createdAt: Date
 }
+
+export type MenuForm = {
+    name: string,
+    description?: string,
+    price: number,
+    categoryId: string,
+    availability: boolean
+}

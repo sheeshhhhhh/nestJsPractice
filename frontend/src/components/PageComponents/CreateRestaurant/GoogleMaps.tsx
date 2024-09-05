@@ -10,11 +10,13 @@ const center = [14.5995, 120.9842]
 
 type GoogleMapsProps = {
     latlng: Partial<RestaurantLocation>,
-    setLatLng: Dispatch<SetStateAction<Partial<RestaurantLocation>>>
+    setLatLng: Dispatch<SetStateAction<Partial<RestaurantLocation>>>,
+    RestaurantName: string,
 }
 
 // this is not google maps
 const GoogleMaps = ({
+    RestaurantName,
     latlng,
     setLatLng
 }: GoogleMapsProps) => {
@@ -56,7 +58,7 @@ const GoogleMaps = ({
                 <Marker 
                 position={marker}>
                     <Popup>
-                        
+                        {RestaurantName}
                     </Popup>
                 </Marker>
             </MapContainer>

@@ -1,9 +1,10 @@
-import React from 'react'
 
 const Dashboard = () => {
   return (
-    <div>
-      
+    <div className="p-3">
+      <h2 className="font-bold text-4xl">
+        Menu
+      </h2>
     </div>
   )
 }
