@@ -14,10 +14,10 @@ const Restaurant = ({
     const isOpen = restaurant.status === businessStatus.Open
     return (
         <Link 
-        className='max-w-[300px]'
+        className='max-w-[300px] h-[220px]'
         to={`/restaurant/${restaurant.id}`} >
             <Card
-            className='max-w-[300px]'
+            className='max-w-[300px] h-[220px] '
             >
                 <CardHeader>
                     {/* attach a photo here later */}

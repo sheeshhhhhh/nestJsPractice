@@ -3,12 +3,15 @@ import { Prisma, Restaurant } from '@prisma/client';
 import { prisma } from 'prisma/db';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
+import { LocationService } from 'src/location/location.service';
+import { truncateByDomain } from 'recharts/types/util/ChartUtils';
 
 @Injectable()
 export class RestaurantService {
+    constructor(private locationService: LocationService) {}
 
     //util
-    serializephoneNumber(body: Restaurant, phoneNumber: bigint) {
+    serializephoneNumber(body: any, phoneNumber: bigint) {
         return {
             ...body,
             phoneNumber: Number(phoneNumber)
@@ -51,16 +54,49 @@ export class RestaurantService {
     async getRestaurant(req: any, id: string) {
         // get other info of restarant later like if following or not and 
         // also the purchase history from restaurant
+        const userId = req.user.sub
         const getRestaurantInfo = await prisma.restaurant.findFirst({
             where: {
                 id: id
             },
             include: {
-                menus: true
+                categories: {
+                    include: {
+                        menu: true
+                    }
+                }
             }
         })
+        // if owner is asking for it to edit most likely
+        if(userId === getRestaurantInfo.ownerId) {
+            return this.serializephoneNumber(getRestaurantInfo, getRestaurantInfo.phoneNumber)
+        }
 
-        return this.serializephoneNumber(getRestaurantInfo, getRestaurantInfo.phoneNumber)
+        const getUserLocation = await prisma.userInfo.findFirst({
+            where: {
+                userId: userId  
+            },
+            select: {
+                latitude: true,
+                longitude: true
+            }
+        })
+    
+        // get distance from his location
+        const distanceOfRestaurant = 
+        await this.locationService.CalculateDistance({
+            latitude: getRestaurantInfo.latitude,
+            longitude: getRestaurantInfo.longitude
+        }, {
+            latitude: getUserLocation.latitude,
+            longitude: getUserLocation.longitude
+        })
+
+
+        return this.serializephoneNumber({
+            ...getRestaurantInfo,
+            restaurantDistance: distanceOfRestaurant
+        }, getRestaurantInfo.phoneNumber)
     }
 
     async createRestaurant(req: any, { name, address, description, email,

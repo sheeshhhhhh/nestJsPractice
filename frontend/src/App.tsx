@@ -11,6 +11,7 @@ import RestaurantDashboard from './Pages/RestaurantDashboard'
 import PrivateRouteComponent from './components/common/PrivateRouteComponent'
 import RestrictedAccess from './Pages/RestrictedAccess'
 import UpdateRestaurant from './Pages/UpdateRestaurant'
+import Restaurant from './Pages/Restaurant'
 
 function App() {
   const location = useLocation()
@@ -53,7 +54,7 @@ function App() {
         } />
         <Route path='/restaurant/:id' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
-            {undefined}
+            <Restaurant />
           </PrivateRouteComponent>
         } />
 

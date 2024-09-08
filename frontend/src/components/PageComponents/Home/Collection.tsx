@@ -23,7 +23,7 @@ const Collection = () => {
     if(data?.length === 0) return <CannotFind />
 
     return (
-        <div className='flex'>
+        <div className='flex flex-wrap gap-5'>
             {data?.map((restaurant) => {
                 return <Restaurant restaurant={restaurant} />
             })}      

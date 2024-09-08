@@ -1,4 +1,4 @@
-import { ChangeEvent } from 'react'
+import { ChangeEvent, FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Input } from '../../ui/input'
 import { Button } from '../../ui/button'
@@ -16,7 +16,8 @@ const Search = () => {
     }
     const { mutate, isPending } = useMutation({
         mutationKey: ['restaurant'],
-        mutationFn: async () => {
+        mutationFn: async (e: FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
             const response = await apiClient.get(`/restaurant/GetManyRestaurants?search=${query || ''}`)
             return response.data
         },
@@ -33,21 +34,23 @@ const Search = () => {
     })
 
     return (
-        <div className='max-w-[400px] w-full relative flex'>
+        <form 
+        onSubmit={mutate}
+        className='max-w-[400px] w-full relative flex'>
             <Input
             placeholder='Search'
             onChange={(e) => changeSearchParams(e)}
             value={query}
             />
             <Button
-            onClick={() => mutate()}
+            type='submit'
             className='absolute right-1'
             disabled={isPending}
             variant={'ghost'}
             >
                 <SearchIcon />
             </Button>
-        </div>
+        </form>
     )
 }
 

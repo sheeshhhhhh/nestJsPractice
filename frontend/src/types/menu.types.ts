@@ -7,7 +7,6 @@ export type MenuInfo ={
     price: number,
 
     categoryId: string
-    category: category,
 
     availability: boolean,
 
@@ -15,6 +14,10 @@ export type MenuInfo ={
 
     createdAt: Date
 }
+
+export type MenuInfoCategory = {
+    category?: category,
+} & MenuInfo
 
 export type MenuForm = {
     name: string,

@@ -1,3 +1,4 @@
+import { MenuInfo } from "./menu.types"
 
 export enum  businessStatus {
     Open = "Open",
@@ -35,7 +36,8 @@ export type RestaurantInfo = {
 export type category = {
     id: string,
     CategoryName: string,
-    restaurantId?: string 
+    restaurantId?: string,
+    menu: MenuInfo[]
 }
 
 export type RestaurantOpeningHours = {
@@ -43,9 +45,17 @@ export type RestaurantOpeningHours = {
     open: string
 }
 
+export type RestaurantDistance = {
+    restaurantDistance: number
+}
+
 export type Restaurant = {
     openingHours: RestaurantOpeningHours
-} & RestaurantInfo & RestaurantLocation 
+} & RestaurantInfo & RestaurantLocation & Partial<RestaurantDistance>
+
+export type RestaurantWithCategories = {
+    categories?: category[]
+} & Restaurant
 
 export type FormRestaurant = {
     name: string,
