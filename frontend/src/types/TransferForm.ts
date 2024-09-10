@@ -6,7 +6,6 @@ const TransferForm = (datas: any): FormData => {
     for (let key in datas) {
         if(datas.hasOwnProperty(key)) {
             formData.append(key.toString(), datas[key])
-            console.log(datas[key])
         }
     }
 
