@@ -31,6 +31,7 @@ const Login = () => {
                 credentials: 'include'
             })
             const data = await res.json()
+
             if(data.error) throw new Error(data.error)
             if(data.access_token) {
                 setItem(data.access_token)

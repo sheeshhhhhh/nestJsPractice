@@ -8,6 +8,8 @@ import apiClient from '../../../../../util/apiClient'
 import { useAuthContext } from '../../../../../context/AuthContext'
 import { useQueryClient } from '@tanstack/react-query'
 import apiErrorHandler from '../../../../../util/apiErrorHandler'
+import HeaderPhotoInput from '../../../../common/HeaderPhotoInput'
+import TransferForm from '../../../../../types/TransferForm'
 
 type MenuFormProps = {
     setOpen?: Dispatch<SetStateAction<boolean>>,
@@ -25,8 +27,9 @@ const MenuForm = ({
         description: initialValues?.description || '',
         price: initialValues?.price || 0,
         categoryId: initialValues?.categoryId || '',
-        availability: initialValues?.availability || false
+        availability: initialValues?.availability || false,
     })
+    const [file, setFile] = useState<any>(initialValues?.HeaderPhoto);
     const { user } = useAuthContext()
     const queryClient = useQueryClient();
 
@@ -40,16 +43,20 @@ const MenuForm = ({
     }
 
     const submitForm = async (e: FormEvent<HTMLFormElement>) => {
+        // make this a form to handle files 
         e.preventDefault()
-        const response = type === 'add' ? 
-        await apiClient.post('/menu', { // for creating menu
+
+        const formData = TransferForm({
             ...menuInfo,
-            restaurantId: user?.restaurant?.id  
-        }) : 
-        await apiClient.patch(`/menu/${initialValues?.id}`, { // for updating the menu
-            ...menuInfo,
-            restaurantId: user?.restaurant?.id
+            restaurantId: user?.restaurant?.id,
+            MenuPhoto: file
         })
+
+        const response = type === 'add' ? 
+        // for creating menu
+        await apiClient.post('/menu', formData) : 
+        // for updating menu
+        await apiClient.patch(`/menu/${initialValues?.id}`, formData)
 
         if(response.status > 400) {
             const message = response.data.message;
@@ -65,6 +72,10 @@ const MenuForm = ({
         <form 
         onSubmit={submitForm}
         className='space-y-3'>
+            <HeaderPhotoInput 
+            setFile={setFile}
+            file={file}
+            />
             <Input 
             value={menuInfo.name}
             name='name'
@@ -96,5 +107,6 @@ const MenuForm = ({
         </form>
     )
 }
+
 
 export default MenuForm

@@ -3,6 +3,7 @@ import { category } from "./restaurant.types"
 export type MenuInfo ={
     id: string,
     name: string,
+    HeaderPhoto: string,
     description?: string,
     price: number,
 

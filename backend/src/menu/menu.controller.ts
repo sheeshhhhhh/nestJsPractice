@@ -1,10 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/CreateMenu.dto';
 import { UpdateMenuDto } from './dto/UpdateMenu.dtio';
 import { isBusinessOwner } from 'src/guards/businessOwner.guard';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { getAllMenusDto } from './dto/getAllMenus.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import diskMulterStorage from 'src/util/discMulterStorage';
 
 @UseGuards(JwtAuthGuard)
 @Controller('menu')
@@ -28,8 +30,14 @@ export class MenuController {
 
     // about menu
     @Post() 
-    async CreateMenuItem(@Request() req: any, @Body() body: CreateMenuDto) {
-        return this.menuService.CreateMenuItem(req, body)
+    @UseInterceptors(
+        FileInterceptor('MenuPhoto', {
+            storage: diskMulterStorage('uploads/MenuPhoto')
+        })
+    )
+    async CreateMenuItem(@Request() req: any, @Body() body: CreateMenuDto, 
+    @UploadedFile() file: Express.Multer.File) {
+        return this.menuService.CreateMenuItem(req, body, file)
     }
 
     @Get(':id')
@@ -43,9 +51,14 @@ export class MenuController {
     }
 
     @Patch(':id') 
-    async UpdateMenuItem(@Param('id') id: string, @Body() body: UpdateMenuDto) {
-        console.log(body)
-        return this.menuService.UpdateMenuItem(id, body)
+    @UseInterceptors(
+        FileInterceptor('MenuPhoto', {
+            storage: diskMulterStorage('uploads/MenuPhoto')
+        })
+    )
+    async UpdateMenuItem(@Param('id') id: string, @Body() body: UpdateMenuDto, 
+    @UploadedFile() file: Express.Multer.File) { 
+        return this.menuService.UpdateMenuItem(id, body, file);
     }
 
 }

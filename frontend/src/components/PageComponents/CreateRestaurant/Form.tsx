@@ -1,16 +1,16 @@
-import { FormRestaurant, RestaurantInfo, RestaurantLocation } from "../../../types/restaurant.types"
-import { useForm, SubmitHandler } from 'react-hook-form'
-import { Input } from "../../ui/input"
-import { Button } from "../../ui/button"
-import { Textarea } from "../../ui/textarea"
-import GoogleMaps from "./GoogleMaps"
-import HeaderPhotoInput from "./HeaderPhotoInput"
 import { useState } from "react"
+import { SubmitHandler, useForm } from 'react-hook-form'
 import toast from "react-hot-toast"
-import apiClient from "../../../util/apiClient"
-import { Label } from "../../ui/label"
-import FormDataSetter from "./FormData.Setter"
 import { Navigate } from "react-router-dom"
+import { FormRestaurant, RestaurantLocation } from "../../../types/restaurant.types"
+import apiClient from "../../../util/apiClient"
+import HeaderPhotoInput from "../../common/HeaderPhotoInput"
+import { Button } from "../../ui/button"
+import { Input } from "../../ui/input"
+import { Label } from "../../ui/label"
+import { Textarea } from "../../ui/textarea"
+import FormDataSetter from "./FormData.Setter"
+import GoogleMaps from "./GoogleMaps"
 
 
 

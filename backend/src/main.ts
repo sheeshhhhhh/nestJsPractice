@@ -14,6 +14,9 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '../..', 'uploads/RestaurantHeaderPhoto'), {
     prefix: '/HeaderPhoto'
   })
+  app.useStaticAssets(join(__dirname, '../..', 'uploads/MenuPhoto'), {
+    prefix: '/MenuPhoto'
+  })
 
   app.enableCors({
     origin: 'http://localhost:5173', // Specify your frontend origin

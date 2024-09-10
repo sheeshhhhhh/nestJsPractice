@@ -13,6 +13,7 @@ import { useAuthContext } from "../../../../context/AuthContext"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import apiClient from "../../../../util/apiClient"
 import { category } from "../../../../types/restaurant.types"
+import toast from "react-hot-toast"
   
 const AddModal = () => {
     const [modal, setModal] = useState<boolean>(false)
@@ -26,7 +27,10 @@ const AddModal = () => {
         mutationFn: async () => {
             const response = await apiClient.post(`/category/${restaurantId}`, {
                 CategoryName: categoryName
-            })
+            }, { validateStatus: () => true})
+            if(response.status > 400) {
+                throw new Error(response.data.message)
+            } 
             return response.data
         },
         onSuccess: async (data) => {
@@ -42,6 +46,9 @@ const AddModal = () => {
             setCategoryName('')
             setModal(false)
         },
+        onError: (error) => {
+            toast.error(error.message)
+        }
     })
 
     return (

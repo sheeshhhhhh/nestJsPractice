@@ -99,6 +99,7 @@ model Category {
 model Menu {
   id              String @id @default(cuid())
   name            String
+  HeaderPhoto     String
   description     String?
   price           Float
   

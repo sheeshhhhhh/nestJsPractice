@@ -1,10 +1,9 @@
 import toast from "react-hot-toast"
 import { useAuthContext } from "../../../context/AuthContext"
+import { FormRestaurant, RestaurantLocation, RestaurantOpeningHours } from "../../../types/restaurant.types"
 import apiClient from "../../../util/apiClient"
 import apiErrorHandler from "../../../util/apiErrorHandler"
 import FormDataSetter from "../CreateRestaurant/FormData.Setter"
-import { FormRestaurant, RestaurantLocation, RestaurantOpeningHours } from "../../../types/restaurant.types"
-import HeaderPhotoInput from "../CreateRestaurant/HeaderPhotoInput"
 
 type updateType = {
     openingHours: RestaurantOpeningHours,

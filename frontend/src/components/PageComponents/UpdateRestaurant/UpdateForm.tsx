@@ -1,12 +1,10 @@
 import { FormEvent, useState } from "react"
-import toast from "react-hot-toast"
 import { FormRestaurant, Restaurant, RestaurantLocation, RestaurantOpeningHours } from "../../../types/restaurant.types"
-import { useAuthContext } from "../../../context/AuthContext"
-import RestaurantInfoFields from "./RestaurantInfoFields"
-import OpeningHoursField from "./OpeningHoursField"
-import HeaderPhotoInput from "../CreateRestaurant/HeaderPhotoInput"
-import GoogleMaps from "../CreateRestaurant/GoogleMaps"
+import HeaderPhotoInput from "../../common/HeaderPhotoInput"
 import { Button } from "../../ui/button"
+import GoogleMaps from "../CreateRestaurant/GoogleMaps"
+import OpeningHoursField from "./OpeningHoursField"
+import RestaurantInfoFields from "./RestaurantInfoFields"
 import updateRestaurant from "./updateRestaurant.hook"
 
 type UpdateFormProps = {
