@@ -16,7 +16,7 @@ const Restaurant = () => {
                 validateStatus: () => true,
             })
             
-            if(response.status > 400) {
+            if(response.status >= 400) {
                 const message = response.data.message;
                 const error = response.data.error;
                 return apiErrorHandler({ error, status: response.status, message })

@@ -57,8 +57,8 @@ const MenuForm = ({
         await apiClient.post('/menu', formData) : 
         // for updating menu
         await apiClient.patch(`/menu/${initialValues?.id}`, formData)
-
-        if(response.status > 400) {
+        console.log(response.status)
+        if(response.status >= 400) {
             const message = response.data.message;
             const error = response.data.error;
             return apiErrorHandler({ error, message, status:response.status })

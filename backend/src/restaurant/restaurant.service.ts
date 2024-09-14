@@ -62,7 +62,11 @@ export class RestaurantService {
             include: {
                 categories: {
                     include: {
-                        menu: true
+                        menu: {
+                            where: {
+                                availability: true
+                            }
+                        }
                     }
                 }
             }

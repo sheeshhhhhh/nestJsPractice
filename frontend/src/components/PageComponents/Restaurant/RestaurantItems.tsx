@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom"
 import { RestaurantWithCategories } from "../../../types/restaurant.types"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useState } from "react"
+import MenuCard from "./MenuCard"
 
 type RestaurantItemsProps = {
     restaurant: RestaurantWithCategories
@@ -17,6 +17,8 @@ const RestaurantItems = ({
     const next = (idx: number) => {
         setSelect(idx)
 
+
+        // DO LATER!!!: need make it scroll in the menu but also the category navigation
         //make the scrolling behavior
         const selectedCategory = scrollContainerRef.current?.children[idx] as HTMLElement;
         selectedCategory?.scrollIntoView({
@@ -56,19 +58,18 @@ const RestaurantItems = ({
                 </div>
 
             {/* just map the categories and map the menu's within categories */}
-            <div className="flex flex-col gap-3 p-4 max-h-[652px]">
+            <div 
+            className="flex flex-col gap-3 p-4 max-h-[652px] overflow-y-auto smoothScroll scrollbar-hide">
                 {categories?.map((category) => {
                     return (
                         <div 
                         className="p-2 " 
                         id={category.id}>
-                            <h2 className="my-2 font-bold text-2xl">
+                            <h2 className="my-3 font-bold text-4xl">
                                 {category.CategoryName}
                             </h2>
                             <div>
-                                {category.menu.map((menu) => {
-                                    return <h2>{menu.name}</h2>
-                                })}
+                                {category.menu.map((menu) => <MenuCard menu={menu} />)}
                             </div>
                         </div>
                     )
@@ -77,5 +78,4 @@ const RestaurantItems = ({
         </div>
     )
 }
-
 export default RestaurantItems

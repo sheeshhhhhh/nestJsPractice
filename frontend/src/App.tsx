@@ -12,6 +12,7 @@ import PrivateRouteComponent from './components/common/PrivateRouteComponent'
 import RestrictedAccess from './Pages/RestrictedAccess'
 import UpdateRestaurant from './Pages/UpdateRestaurant'
 import Restaurant from './Pages/Restaurant'
+import Menu from './Pages/Menu'
 
 function App() {
   const location = useLocation()
@@ -60,7 +61,7 @@ function App() {
 
         <Route path='/menu/:id' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
-            {undefined}
+            <Menu />
           </PrivateRouteComponent>
         } />
         <Route path='/setting' element={
@@ -71,7 +72,7 @@ function App() {
         <Route path='/orderHistory' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             {undefined}
-        </PrivateRouteComponent>
+          </PrivateRouteComponent>
         } />
 
         {/* for restaurant owners */} 
@@ -87,8 +88,8 @@ function App() {
         } />
         <Route path='/updateRestaurant' element={
           <PrivateRouteComponent role={['Business']} userRole={user?.role} >
-          <UpdateRestaurant />
-        </PrivateRouteComponent>
+           <UpdateRestaurant />
+          </PrivateRouteComponent>
         } 
         />
       </Routes>

@@ -35,7 +35,9 @@ const Login = () => {
             if(data.error) throw new Error(data.error)
             if(data.access_token) {
                 setItem(data.access_token)
-                window.location.assign(`http://localhost:5173${next}`)
+                next ? 
+                window.location.assign(`http://localhost:5173${next}`) :
+                window.location.assign(`http://localhost:5173`)
             }
         }
     })

@@ -17,6 +17,9 @@ const apiErrorHandler = async ({
     }
 
     switch(status) {
+        case 400:
+            await diplayError(error, message)
+            break;
         case 406:
             await diplayError(error, message)
             break;
