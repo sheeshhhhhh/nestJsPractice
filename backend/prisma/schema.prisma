@@ -29,6 +29,7 @@ model User {
   role        role @default(Customer)
   
   history     Order[]
+  cart      Cart?
 
   createdAt DateTime @default(now())
 }
@@ -49,6 +50,38 @@ model userInfo {
 
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+model Cart {
+  id            String @id @default(cuid())
+  restaurantId  String 
+  userId        String @unique
+  // can take up a lot of menu's
+
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant    Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  cartItems     CartItem[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+} 
+
+
+// should also add cartItem
+model CartItem {
+  id            String @id @default(cuid())
+  cartId        String 
+  menuId        String
+
+  quantity      Int
+  price         Int
+  ifProductDoesnotExist String @default("Remove it from my order")
+
+  cart          Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  menu          Menu  @relation(fields: [menuId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime  @default(now())
 }
 
 enum businessStatus {
@@ -78,6 +111,8 @@ model Restaurant {
   // add categories for the user to select later on
 
   orders        Order[]
+  cart          Cart[]
+
   menus         Menu[]
   owner         User  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   categories    Category[]
@@ -112,6 +147,7 @@ model Menu {
   restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)  
   
   ordersItem      OrderItem[]
+  cartItem        CartItem[]
 
   createdAt       DateTime @default(now())
 }
