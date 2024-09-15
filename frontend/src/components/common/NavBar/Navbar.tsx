@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import Profile from "./Profile"
 import { useAuthContext } from "../../../context/AuthContext"
+import NavCart from "./NavCart"
 
 const Navbar = () => {
     const { user } = useAuthContext()
@@ -18,9 +19,10 @@ const Navbar = () => {
 
                 <nav>
                     {/* supposed to be links */}
-                </nav>
+                </nav>  
 
-                <div>
+                <div className="flex gap-5 items-center">
+                    <NavCart />
                     {/* supposed to be profile */}
                     {user && <Profile />}
                 </div>

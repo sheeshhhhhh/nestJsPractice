@@ -17,7 +17,6 @@ export class isCustomer implements CanActivate {
             } else {
                 return true
             }
-
         } catch (error) {
             throw new GoneException('error in the authentication')
         }

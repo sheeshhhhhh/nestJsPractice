@@ -6,11 +6,12 @@ import { CreateCartMenuDto } from './dto/CreateCartMenu.dto';
 import { UpdateCartMenuDto } from './dto/UpdateCartMenu.Dto';
 
 @UseGuards(JwtAuthGuard)
-@UseGuards(isCustomer)
+
 @Controller('cart')
 export class CartController {
     constructor(private cartService: CartService) {}
 
+    @UseGuards(isCustomer)
     @Post()
     async addCart(@Body() body: CreateCartMenuDto, @Request() req: any) {
         return this.cartService.addCart(body, req)
@@ -21,14 +22,14 @@ export class CartController {
         return this.cartService.getCurrentCart(req)
     }
 
-    @Patch('menuId')
-    async updateCart(@Body() body: UpdateCartMenuDto, @Param('menuId') id: string) {
+    @Patch(':cartItemId')
+    async updateCart(@Body() body: UpdateCartMenuDto, @Param('cartItemId') id: string) {
         return this.cartService.updateCart(body, id)
     }
 
 
-    @Delete('menuId')
-    async deleteMenuCart(@Param('menuId') id: string) {
+    @Delete(':cartItemId')
+    async deleteMenuCart(@Param('cartItemId') id: string) {
         return this.cartService.deleteMenuCart(id)
     }
 }

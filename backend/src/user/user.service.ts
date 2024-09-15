@@ -196,7 +196,7 @@ export class UserService {
 
   async deleteUser(req: any)  {
     try {
-      const userId = req.user.id;
+      const userId = req.user.sub;
 
       // decide if it's better to preserve the restaurant in history instead of giving it in 
       // it will be automatically delete anyway because of cascade delete

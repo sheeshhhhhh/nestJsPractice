@@ -6,10 +6,10 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class CartService {
     constructor(private prisma: PrismaService) {}
-    // stil not tested
+
     async addCart(body: CreateCartMenuDto, req: any) {
-        const userId = req.user.id
-        //check if cart exist
+        const userId = req.user.sub
+
         let checkCart = await this.prisma.cart.findFirst({
             where: {
                 userId: userId
@@ -17,7 +17,6 @@ export class CartService {
         })
 
         if(!checkCart) {
-            // create if does not exit
             checkCart = await this.prisma.cart.create({
                 data: {
                     restaurantId: body.restaurantId,
@@ -42,7 +41,10 @@ export class CartService {
                 })
             }
         }
-        
+
+        // test if cart already exist and just add it
+        // but also look if different then make a new one
+
         const createMenu = await this.prisma.cartItem.create({
             data: {
                 cartId: checkCart.id,
@@ -67,7 +69,7 @@ export class CartService {
 
     async getCurrentCart(req: any) {
         try {
-            const userId = req.user.id
+            const userId = req.user.sub
 
             const getCart = await this.prisma.cart.findFirst({
                 where: {
@@ -77,6 +79,16 @@ export class CartService {
                     cartItems: {
                         include: {
                             menu: true
+                        }
+                    },
+                    restaurant: {
+                        select: {
+                            name: true,
+                            address: true,
+                            HeaderPhoto: true,
+                            email: true,
+                            latitude: true,
+                            longitude: true
                         }
                     }
                 }

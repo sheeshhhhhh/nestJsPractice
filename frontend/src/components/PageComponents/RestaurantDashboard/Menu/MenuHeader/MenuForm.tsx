@@ -9,7 +9,7 @@ import { useAuthContext } from '../../../../../context/AuthContext'
 import { useQueryClient } from '@tanstack/react-query'
 import apiErrorHandler from '../../../../../util/apiErrorHandler'
 import HeaderPhotoInput from '../../../../common/HeaderPhotoInput'
-import TransferForm from '../../../../../types/TransferForm'
+import TransferForm from '../../../../../util/TransferForm'
 
 type MenuFormProps = {
     setOpen?: Dispatch<SetStateAction<boolean>>,

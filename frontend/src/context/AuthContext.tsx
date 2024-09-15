@@ -47,13 +47,10 @@ export const AuthContextProvider = ({ children } : PropsWithChildren) => {
         const getUser = async () => {
             setLoading(true)
             try {
-                const user = await apiClient.get('/auth/check').catch(err => {
-                    if(err.status === 401) {
-                        // this is when user session has expired or logged out // aka invalid
-                        // this is unauthorized which means we need to remove the accesstoen in the local storage
-                        removeItem()
-                    }
-                })
+                const user = await apiClient.get('/auth/check')
+                if(user.status === 401) {
+                    removeItem()
+                }
                 if(user) {
                     // verify role
                     setUser(user.data)
