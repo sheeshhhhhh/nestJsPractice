@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCartMenuDto } from './dto/CreateCartMenu.dto';
 import { UpdateCartMenuDto } from './dto/UpdateCartMenu.Dto';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,9 +7,30 @@ import { PrismaService } from '../prisma/prisma.service';
 export class CartService {
     constructor(private prisma: PrismaService) {}
 
+    async getCartItem(cartItemId: string) {
+
+        if(!cartItemId) {
+            throw new BadRequestException('cartItemId is empty')
+        }
+
+        const getcartItem = await this.prisma.cartItem.findFirst({
+            where: {
+                id: cartItemId
+            },
+            include: {
+                menu: true
+            }
+        })
+        
+        if (!getcartItem) {
+            throw new NotFoundException('Cart item not found');
+        }    
+
+        return getcartItem
+    }
+
     async addCart(body: CreateCartMenuDto, req: any) {
         const userId = req.user.sub
-
         let checkCart = await this.prisma.cart.findFirst({
             where: {
                 userId: userId
@@ -51,8 +72,8 @@ export class CartService {
                 menuId: body.menuId,
                 quantity: body.quantity,
                 price: body.price,
-                ifProductDoesnotExist: body.ifProductDoesnotExist
-                // instruction: body.instruction
+                ifProductDoesnotExist: body.ifProductDoesnotExist,
+                instruction: body.instruction
             },
             include: {
                 menu: true

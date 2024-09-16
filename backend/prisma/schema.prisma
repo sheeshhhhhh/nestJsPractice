@@ -76,6 +76,7 @@ model CartItem {
 
   quantity      Int
   price         Int
+  instruction   String?
   ifProductDoesnotExist String @default("Remove it from my order")
 
   cart          Cart  @relation(fields: [cartId], references: [id], onDelete: Cascade)

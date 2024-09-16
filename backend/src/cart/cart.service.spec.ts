@@ -3,6 +3,7 @@ import { CartService } from './cart.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCartMenuDto } from './dto/CreateCartMenu.dto';
 import { query } from 'express';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('CartService', () => {
   let service: CartService;
@@ -21,6 +22,7 @@ describe('CartService', () => {
               delete: jest.fn(),
             },
             cartItem: {
+              findFirst: jest.fn(),
               create: jest.fn(),
               delete: jest.fn(),
               update: jest.fn(),
@@ -45,7 +47,7 @@ describe('CartService', () => {
     createdAt: new Date('2024-09-15T10:00:00Z'),
   };
   const mockUserId = 'adssakdakld';
-  const mockRequest = { user: { id: mockUserId } };
+  const mockRequest = { user: { sub: mockUserId } };
   const mockCart = { id: 'sdaldnaldn', userId: mockUserId, restaurantId: 'dsaodnainiw' }
   const mockBody: CreateCartMenuDto = { 
     price: 130,
@@ -61,6 +63,7 @@ describe('CartService', () => {
     menuId: mockBody.menuId,
     quantity: mockBody.quantity,
     price: mockBody.price,
+    instruction: '',
     ifProductDoesnotExist: mockBody.ifProductDoesnotExist,
     cratedAt: '2024-09-15T14:00:00Z'
   }
@@ -73,6 +76,46 @@ describe('CartService', () => {
       }
     ]
   }
+
+  describe('getCartItem', () => {
+    
+    it('should return a data base on the params', async () => {
+      const cartItemMenu = {
+        ...cartItem,
+        menu: mockMenu
+      }
+
+      prismaService.cartItem.findFirst = jest.fn().mockResolvedValue(cartItemMenu);
+
+      const result = await service.getCartItem(cartItemMenu.id)
+
+      expect(prismaService.cartItem.findFirst).toHaveBeenCalledWith({
+        where: { id: cartItemMenu.id },
+        include: { menu: true }
+      })
+      expect(result).toBeDefined()
+      expect(result).toEqual(cartItemMenu)
+    })
+
+    it('should throw Not Found Exception when cartitemId does not exist in the database', async () => {
+
+      prismaService.cartItem.findFirst = jest.fn().mockResolvedValue(null)
+
+      await expect(service.getCartItem('non existing id')).rejects.toThrow(
+        new NotFoundException('Cart item not found')
+      )
+
+    })
+
+    it('should throw bad Request Exception when cartItemId is empty', async () => {
+      
+      await expect(service.getCartItem('')).rejects.toThrow(
+        new BadRequestException('cartItemId is empty')
+      );
+
+    })
+
+  })
 
   describe('addCart', () => {
 
@@ -97,7 +140,8 @@ describe('CartService', () => {
           menuId: mockBody.menuId,
           quantity: mockBody.quantity,
           price: mockBody.price,
-          ifProductDoesnotExist: mockBody.ifProductDoesnotExist
+          ifProductDoesnotExist: mockBody.ifProductDoesnotExist,
+          instruction: mockBody.instruction
         },
         include: {
           menu: true
@@ -175,7 +219,8 @@ describe('CartService', () => {
           menuId: mockBody.menuId,
           quantity: mockBody.quantity,
           price: mockBody.price,
-          ifProductDoesnotExist: mockBody.ifProductDoesnotExist
+          ifProductDoesnotExist: mockBody.ifProductDoesnotExist,
+          instruction: mockBody.instruction
         },
         include: {
           menu: true
@@ -198,8 +243,6 @@ describe('CartService', () => {
   })
   
   describe('getCurrentId', () => {
-    const mockUserId = 'adssakdakld';
-    const mockRequest = { user: { id: mockUserId } };
 
     it('should return a currentCart', async () => {
       prismaService.cart.findFirst = jest.fn().mockResolvedValue(mockReturnCart)
@@ -208,7 +251,23 @@ describe('CartService', () => {
       
       expect(prismaService.cart.findFirst).toHaveBeenCalledWith({
         where: { userId: mockUserId },
-        include: { cartItems: { include: { menu: true } } }
+        include: { 
+          cartItems: { 
+            include: { 
+              menu: true 
+            } 
+          },
+          restaurant: {
+            select: {
+              name: true,
+              address: true,
+              HeaderPhoto: true,
+              email: true,
+              latitude: true,
+              longitude: true
+            }
+          }
+        }
       })
 
       expect(result).toBeDefined()

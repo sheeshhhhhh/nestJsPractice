@@ -39,7 +39,8 @@ describe('CartController', () => {
             addCart: jest.fn(),
             getCurrentCart: jest.fn(),
             updateCart: jest.fn(),
-            deleteMenuCart: jest.fn()
+            deleteMenuCart: jest.fn(),
+            getCartItem: jest.fn(),
           }
         },
         {
@@ -88,6 +89,7 @@ describe('CartController', () => {
       quantity: 2,
       price: 9.99,
       ifProductDoesnotExist: 'Remove it from my order',
+      instruction: '',
       createdAt: new Date('2024-09-10T12:00:00Z')
     }
   ]
@@ -100,6 +102,22 @@ describe('CartController', () => {
     cartItems: mockCartItems,
   }
 
+
+  describe('getCartItem/:cartItemId', () => {
+    it('should return cartItem data base on params', async () => {
+      jwtAuthGuard.canActivate = jest.fn().mockResolvedValue(true);
+      iscustomer.canActivate = jest.fn().mockResolvedValue(true);
+      const mockResult = mockCartItems[0]
+
+      jest.spyOn(service, 'getCartItem').mockResolvedValue(mockResult)
+
+      const result = await controller.getCartItem(mockResult.id)
+
+      expect(result).toBeDefined()
+      expect(result).toEqual(mockResult)
+      expect(service.getCartItem).toHaveBeenCalledWith(mockResult.id)
+    })
+  })
 
   describe('addCart', () => {
     it('should return results from CartService.addCart', async () => {
@@ -121,7 +139,17 @@ describe('CartController', () => {
     it('should return the current cart of the user', async () => {
       jwtAuthGuard.canActivate = jest.fn().mockResolvedValue(true);
       iscustomer.canActivate = jest.fn().mockResolvedValue(true);
-      const mockresult = mockCart
+      const mockresult = {
+        ...mockCart,
+        restaurant: {
+          name: 'Mock Restaurant',
+          address: '123 Mock Street, Mock City, Country',
+          HeaderPhoto: 'https://example.com/mock-image.jpg',
+          email: 'mockrestaurant@example.com',
+          latitude: 14.5995, // Example latitude value
+          longitude: 120.9842 // Example longitude value
+          }
+        }
 
       jest.spyOn(service, 'getCurrentCart').mockResolvedValue(mockresult)
 
