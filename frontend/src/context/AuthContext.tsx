@@ -55,7 +55,7 @@ export const AuthContextProvider = ({ children } : PropsWithChildren) => {
                     // verify role
                     setUser(user.data)
                 }
-        
+                
             } catch (error: any) {
                 console.log(error.message)
             } finally {

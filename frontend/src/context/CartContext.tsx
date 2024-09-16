@@ -3,6 +3,7 @@ import apiClient from "../util/apiClient";
 import { MenuInfo } from "../types/menu.types";
 import apiErrorHandler from "../util/apiErrorHandler";
 import toast from "react-hot-toast";
+import { useAuthContext } from "./AuthContext";
 
 type RestaurantForCart = {
     name: string,
@@ -63,27 +64,28 @@ export const CartContextProvider = ({
 }: PropsWithChildren) => {
     const [cart, setCart] = useState<Cart | undefined>(undefined)
     const [loading, setLoading] = useState<boolean>(true)
-
+    const { user } = useAuthContext()
     useEffect(() => {
+        if(!user || user.role === 'Business') return
         const getCart = async () => {
             setLoading(true)
             try {
                 const response = await apiClient.get('/cart')
-
-                if(response.status >= 400) {
-                    const message = response.data.message;
-                    const error = response.data.error;
-                    return apiErrorHandler({ error, message, status:response.status })
-                }
+                
                 setCart(response.data)
-            } catch (error: any) {
-                toast.error(error.message)
+            } catch (errorResponse: any) {
+                if(errorResponse.status >= 400) {
+                    const message = errorResponse.response.data.message;
+                    const error = errorResponse.response.data.error;
+                    const status = errorResponse.status
+                    return apiErrorHandler({ error, message, status })
+                }
             } finally {
                 setLoading(false)
             }
         }
         getCart()
-    }, [])
+    }, [user])
 
     const value = {
         cart: cart,
