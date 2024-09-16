@@ -7,7 +7,7 @@ import { RadioGroup, RadioGroupItem } from "../../ui/radio-group"
 import { Label } from "../../ui/label"
 import { MenuInfo } from "../../../types/menu.types"
 import { OrderItemForm } from "../../../Pages/Menu"
-import { Dispatch, memo, SetStateAction } from "react"
+import { Dispatch, SetStateAction } from "react"
 
 type MenuCardProps = {
     Menu: MenuInfo,
@@ -20,7 +20,6 @@ const MenuCard = ({
     orderForm,
     setOrderForm
 }: MenuCardProps) => {
-
 
     // add options later
     return (
@@ -121,4 +120,4 @@ const MenuCard = ({
     )
 }
 
-export default memo(MenuCard)
+export default MenuCard

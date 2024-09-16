@@ -24,7 +24,7 @@ const apiErrorHandler = async ({
             await diplayError(error, message)
             break;
         case 401:
-            await diplayError(error, message)
+            message && toast.error(message)
             break;
         case 501: 
             //unique constraints prisma

@@ -8,6 +8,8 @@ import MenuCard from "../components/PageComponents/Menu/MenuCard"
 import MenuOrderCount from "../components/PageComponents/Menu/MenuOrderCount"
 import { useState } from "react"
 import { ChevronLeft } from "lucide-react"
+import { useCartContext } from "../context/CartContext"
+import toast from "react-hot-toast"
 
 export type OrderItemForm = {
     instruction?: string,
@@ -29,7 +31,6 @@ const Menu = () => {
         restaurantId: '',
         price: 0 // gonna be set when the request come in
     })
-    
     const { isLoading, data: Menu } = useQuery({
         queryKey: ['menu'],
         queryFn: async () => {
@@ -48,6 +49,33 @@ const Menu = () => {
             return response.data as MenuInfo
         }
     })
+
+    const { cart, setCart } = useCartContext()
+    const addToCart = async (orderCount: number) => {
+        const response = await apiClient.post('/cart', {
+            ...orderForm,
+            quantity: orderCount
+        })
+        
+        if(response.status >= 400) {
+            const message = response.data.message;
+            const error = response.data.error;
+            return apiErrorHandler({ message, error, status:response.status })
+        }
+        toast.success('added to cart')
+        if(cart?.restaurantId !== response.data.restaurantId) {
+            setCart(response.data)
+        } else {
+            setCart(prev => ({
+                ...response.data,
+                ...prev,
+                cartItems: prev?.cartItems ? 
+                    [...prev?.cartItems, ...response.data.cartItems] 
+                : 
+                    response.data.cartItems
+            }))
+        }
+    }
 
     if(isLoading) return <LoadingSpinner />
     if(!Menu) {
@@ -69,7 +97,8 @@ const Menu = () => {
                 Menu={Menu}
                 />
                 <MenuOrderCount 
-                orderForm={orderForm} 
+                callBackFunction={addToCart}
+                buttonText="add to Cart"
                 />
             </div>
         </div>

@@ -13,6 +13,7 @@ import RestrictedAccess from './Pages/RestrictedAccess'
 import UpdateRestaurant from './Pages/UpdateRestaurant'
 import Restaurant from './Pages/Restaurant'
 import Menu from './Pages/Menu'
+import EditCartItem from './Pages/EditCartItem'
 
 function App() {
   const location = useLocation()
@@ -64,6 +65,13 @@ function App() {
             <Menu />
           </PrivateRouteComponent>
         } />
+
+        <Route path='/editCart/:cartItemId' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            <EditCartItem />
+          </PrivateRouteComponent>
+        } />
+
         <Route path='/setting' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             {undefined}

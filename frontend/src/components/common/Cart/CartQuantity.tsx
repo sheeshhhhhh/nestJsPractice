@@ -20,17 +20,20 @@ const CartQuantity = ({
         const response = await apiClient.patch(`/cart/${cartItemId}`, {
             quantity: quantity
         })
+
         //updatign the state
         if(cart?.cartItems) {
             setCart(() => ({
                 ...cart,
-                cartItems: [...cart.cartItems.map((cartItem) => {
-                    if(cartItem.id === response.data.id) {
-                        cartItem.quantity = response.data.quantity
+                cartItems: [
+                    ...cart.cartItems.map((cartItem) => {
+                        if(cartItem.id === response.data.id) {
+                            cartItem.quantity = response.data.quantity
+                            return cartItem
+                        }   
                         return cartItem
-                    }   
-                    return cartItem
-                })]
+                    })
+                ]   
             }))
         }
     } 
@@ -44,7 +47,6 @@ const CartQuantity = ({
             }))
         }
     }
-    
     return (
         <div className="rounded-lg flex flex-col items-center">
             <Button 
