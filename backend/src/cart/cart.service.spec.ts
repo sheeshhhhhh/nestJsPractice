@@ -26,7 +26,8 @@ describe('CartService', () => {
               create: jest.fn(),
               delete: jest.fn(),
               update: jest.fn(),
-            }
+            },
+            $transaction: jest.fn()
           }
         }
       ],
@@ -75,7 +76,7 @@ describe('CartService', () => {
         menu: mockMenu
       }
     ]
-  }
+  }  
 
   describe('getCartItem', () => {
     
@@ -123,7 +124,7 @@ describe('CartService', () => {
 
       prismaService.cart.findFirst = jest.fn().mockResolvedValue(null) // we will simulate if it does not exist
       prismaService.cart.create = jest.fn().mockResolvedValue(mockCart);
-      prismaService.cartItem.create = jest.fn().mockResolvedValue({
+      prismaService.$transaction = jest.fn().mockResolvedValue({
         ...cartItem,
         menu: mockMenu
       })
@@ -134,19 +135,7 @@ describe('CartService', () => {
       expect(prismaService.cart.create).toHaveBeenCalledWith({
         data: { restaurantId: mockBody.restaurantId, userId: mockUserId }
       });
-      expect(prismaService.cartItem.create).toHaveBeenCalledWith({
-        data: {
-          cartId: mockCart.id,
-          menuId: mockBody.menuId,
-          quantity: mockBody.quantity,
-          price: mockBody.price,
-          ifProductDoesnotExist: mockBody.ifProductDoesnotExist,
-          instruction: mockBody.instruction
-        },
-        include: {
-          menu: true
-        }
-      })
+      expect(prismaService.$transaction).toHaveBeenCalled()
 
       expect(result).toBeDefined()
       expect(result).toEqual({
@@ -163,7 +152,7 @@ describe('CartService', () => {
     it('should just use the cart if it exist, and not call create nor make a new one', async () => {
 
       prismaService.cart.findFirst = jest.fn().mockResolvedValue(mockCart)
-      prismaService.cartItem.create = jest.fn().mockResolvedValue({
+      prismaService.$transaction = jest.fn().mockResolvedValue({
         ...cartItem,
         menu: mockMenu
       })
@@ -171,7 +160,7 @@ describe('CartService', () => {
       const result = await service.addCart(mockBody, mockRequest)
 
       expect(prismaService.cart.findFirst).toHaveBeenCalledWith({ where: { userId: mockUserId } })
-      expect(prismaService.cartItem.create).toHaveBeenCalled()
+      expect(prismaService.$transaction).toHaveBeenCalled()
 
       expect(result).toBeDefined()
       expect(result).toEqual({
@@ -200,10 +189,11 @@ describe('CartService', () => {
         id: cartNewlyCreatedId,
         userId: mockUserId
       })
-      prismaService.cartItem.create = jest.fn().mockResolvedValue({
+      prismaService.$transaction = jest.fn().mockResolvedValue({
         ...cartItem,
         menu: mockMenu
       })
+      
 
       const result = await service.addCart(newBody, mockRequest)
       
@@ -213,19 +203,7 @@ describe('CartService', () => {
       expect(prismaService.cart.create).toHaveBeenCalledWith({
         data: { restaurantId: differentRestaurantId, userId: mockUserId }
       })
-      expect(prismaService.cartItem.create).toHaveBeenCalledWith({
-        data: {
-          cartId: cartNewlyCreatedId,
-          menuId: mockBody.menuId,
-          quantity: mockBody.quantity,
-          price: mockBody.price,
-          ifProductDoesnotExist: mockBody.ifProductDoesnotExist,
-          instruction: mockBody.instruction
-        },
-        include: {
-          menu: true
-        }
-      })
+      expect(prismaService.$transaction).toHaveBeenCalled()
       
       expect(result).toBeDefined()
       expect(result).toEqual({
@@ -240,6 +218,7 @@ describe('CartService', () => {
         ]
       })
     })
+
   })
   
   describe('getCurrentId', () => {

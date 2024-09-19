@@ -167,7 +167,9 @@ export class AuthService {
           userInfo: {
             select: {
               profile: true,
-              address: true
+              address: true,
+              latitude: true,
+              longitude: true
             }
           }
         },

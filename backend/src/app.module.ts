@@ -10,12 +10,13 @@ import { ConfigModule } from '@nestjs/config';
 import { LocationModule } from './location/location.module';
 import { CartModule } from './cart/cart.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { PaymongoModule } from './paymongo/paymongo.module';
 
 @Module({
   imports: [AuthModule, UserModule, RestaurantModule, MenuModule, CategoryModule, 
     ConfigModule.forRoot({
       isGlobal: true
-    }), LocationModule, CartModule, PrismaModule
+    }), LocationModule, CartModule, PrismaModule, PaymongoModule
   ],
   controllers: [AppController],
   providers: [AppService],

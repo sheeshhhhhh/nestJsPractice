@@ -86,20 +86,23 @@ export class RestaurantService {
             }
         })
     
-        // get distance from his location
-        const distanceOfRestaurant = 
-        await this.locationService.CalculateDistance({
-            latitude: getRestaurantInfo.latitude,
-            longitude: getRestaurantInfo.longitude
-        }, {
-            latitude: getUserLocation.latitude,
-            longitude: getUserLocation.longitude
-        })
+        let distanceOfRestaurant;
+        if(getUserLocation) {
+            // get distance from his location
+            distanceOfRestaurant = 
+            await this.locationService.CalculateDistance({
+                latitude: getRestaurantInfo.latitude,
+                longitude: getRestaurantInfo.longitude
+            }, {
+                latitude: getUserLocation.latitude,
+                longitude: getUserLocation.longitude
+            })
+        }
 
 
         return this.serializephoneNumber({
             ...getRestaurantInfo,
-            restaurantDistance: distanceOfRestaurant
+            restaurantDistance: distanceOfRestaurant || undefined
         }, getRestaurantInfo.phoneNumber)
     }
 

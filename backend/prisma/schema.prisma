@@ -157,6 +157,12 @@ enum OrderStatus {
   Delivered
   Processing
 }
+
+enum PaymentStatus {
+  NotPaid
+  Paid
+}
+
 model Order {
   id              String    @id @default(cuid())
   userId          String
@@ -165,6 +171,7 @@ model Order {
   totalAmount     Float
   status          OrderStatus @default(Processing)
 
+  paymentStatus   PaymentStatus @default(NotPaid)
   deliveryAddress String
   deliveryTime    DateTime?
 

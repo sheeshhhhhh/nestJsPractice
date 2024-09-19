@@ -63,27 +63,61 @@ export class CartService {
             }
         }
 
-        // test if cart already exist and just add it
-        // but also look if different then make a new one
+        // find if the cartItem being added already exist 
+        // if instrunction and ifProductDoesnotExist the same then just add into quantity
+        
+        ///finding if same cart and order menu
+        const createCartItem = await this.prisma.$transaction(async txprisma => {
+            const existingCartItem = await this.prisma.cartItem.findFirst({
+                where: {
+                    AND: [
+                        {menuId: body.menuId},
+                        {cartId: checkCart.id},
+                        {instruction: body.instruction},
+                        {ifProductDoesnotExist: body.ifProductDoesnotExist}
+                    ]
+                }
+            })
+    
+            // if all the three condition is the same then just update the quantity of the existing 
+            // cartItem
+            if(existingCartItem) {
 
-        const createMenu = await this.prisma.cartItem.create({
-            data: {
-                cartId: checkCart.id,
-                menuId: body.menuId,
-                quantity: body.quantity,
-                price: body.price,
-                ifProductDoesnotExist: body.ifProductDoesnotExist,
-                instruction: body.instruction
-            },
-            include: {
-                menu: true
+                return await this.prisma.cartItem.update({
+                    where: {
+                        id: existingCartItem.id
+                    },
+                    data: {
+                        quantity: {
+                            increment: body.quantity // just adding this quantity
+                        }
+                    },
+                    include: {
+                        menu: true
+                    }
+                })
+
+            } else {
+                return await this.prisma.cartItem.create({
+                    data: {
+                        cartId: checkCart.id,
+                        menuId: body.menuId,
+                        quantity: body.quantity,
+                        price: body.price,
+                        ifProductDoesnotExist: body.ifProductDoesnotExist,
+                        instruction: body.instruction 
+                    },
+                    include: {
+                        menu: true
+                    }
+                })
             }
         })
 
         return {
             ...checkCart,
             cartItems: [
-                createMenu
+                createCartItem
             ]
         }
     }
@@ -153,4 +187,4 @@ export class CartService {
         
         return deleteCartItem
     }
-}
+}   
