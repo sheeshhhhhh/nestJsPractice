@@ -10,7 +10,10 @@ const RestaurantHeader = ({
     restaurant
 }: RestaurantHeader) => {
 
-    const distancefromRestaurant = restaurant.restaurantDistance?.toFixed(2).toString() + 'km'
+    const distancefromRestaurant = restaurant.restaurantDistance ?
+        restaurant.restaurantDistance?.toFixed(2).toString() + 'km away' 
+        :
+        'distance not define'
     // show the status where close or not
     return (
         <div className="flex flex-col gap-2">
@@ -25,7 +28,7 @@ const RestaurantHeader = ({
             <div className="flex flex-col sm:flex-row mt-2">
                 <div className="flex">
                     <h3 className="text-muted-foreground text-lg ml-8 font-medium">
-                        {distancefromRestaurant} away
+                        {distancefromRestaurant}
                     </h3>
                     <Separator orientation="vertical" className="mx-3 h-[28px]" />
                     <h3 className="text-lg flex items-center gap-3 font-medium">

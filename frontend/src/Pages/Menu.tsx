@@ -47,10 +47,12 @@ const Menu = () => {
                 price: response.data.price
             }))
             return response.data as MenuInfo
-        }
+        },
+        refetchOnWindowFocus: false
     })
 
     const { cart, setCart } = useCartContext()
+    
     const addToCart = async (orderCount: number) => {
         const response = await apiClient.post('/cart', {
             ...orderForm,
@@ -62,19 +64,37 @@ const Menu = () => {
             const error = response.data.error;
             return apiErrorHandler({ message, error, status:response.status })
         }
+
         toast.success('added to cart')
         if(cart?.restaurantId !== response.data.restaurantId) {
             setCart(response.data)
         } else {
-            setCart(prev => ({
-                ...response.data,
-                ...prev,
-                cartItems: prev?.cartItems ? 
-                    [...prev?.cartItems, ...response.data.cartItems] 
-                : 
-                    response.data.cartItems
-            }))
+            // checking if item is just getting updated and already exist
+            const itemExist = cart?.cartItems.find((cartItem) => cartItem.id === response.data.cartItems[0].id)
+            if(itemExist) {
+                setCart(prev => ({
+                    ...prev!, // cart item will exist if item exist look at the 72 line function
+                    cartItems: 
+                        prev!.cartItems && prev!.cartItems.map((cartItem) => {
+                            // updating the item
+                            if(cartItem.id === itemExist.id) {
+                                return response.data.cartItems[0]
+                            }
+                            return cartItem
+                        }) 
+                }))
+            } else {
+                setCart(prev => ({
+                    ...response.data,
+                    ...prev,
+                    cartItems: prev?.cartItems ? 
+                        [...prev?.cartItems, ...response.data.cartItems] 
+                    : 
+                        response.data.cartItems
+                }))
+            }
         }
+        window.history.back()
     }
 
     if(isLoading) return <LoadingSpinner />

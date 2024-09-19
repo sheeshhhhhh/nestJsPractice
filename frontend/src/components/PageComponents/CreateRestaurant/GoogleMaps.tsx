@@ -10,8 +10,8 @@ const center = [14.5995, 120.9842]
 
 type GoogleMapsProps = {
     latlng: Partial<RestaurantLocation>,
-    setLatLng: Dispatch<SetStateAction<Partial<RestaurantLocation>>>,
-    RestaurantName: string,
+    setLatLng?: Dispatch<SetStateAction<Partial<RestaurantLocation>>>,
+    RestaurantName: string, // this could just be use aas a name
 }
 
 // this is not google maps
@@ -31,16 +31,18 @@ const GoogleMaps = ({
     
     const MapClickHandler = () => {
         // for handling the marker
-        useMapEvent('click', (e) => {
-            setMarker({
-                lat: e.latlng.lat,
-                lng: e.latlng.lng
+        if(setLatLng) {
+            useMapEvent('click', (e) => {
+                setMarker({
+                    lat: e.latlng.lat,
+                    lng: e.latlng.lng
+                })
+                setLatLng({
+                    latitude: e.latlng.lat,
+                    longitude: e.latlng.lng 
+                })
             })
-            setLatLng({
-                latitude: e.latlng.lat,
-                longitude: e.latlng.lng 
-            })
-        })
+        }
 
         return null
     }

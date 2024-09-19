@@ -27,7 +27,7 @@ type Cart = {
     updatedAt: Date
 }
 
-type CartItems = {
+export type CartItems = {
     id: string,
     cartId: string,
     menuId: string

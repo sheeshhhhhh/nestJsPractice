@@ -17,7 +17,6 @@ const RestaurantItems = ({
     const next = (idx: number) => {
         setSelect(idx)
 
-
         // DO LATER!!!: need make it scroll in the menu but also the category navigation
         //make the scrolling behavior
         const selectedCategory = scrollContainerRef.current?.children[idx] as HTMLElement;
@@ -52,7 +51,7 @@ const RestaurantItems = ({
                     })}
                     <div 
                     style={{ transform: `translateX(${select * 100}%)`}}
-                    className="absolute h-[5px] w-[170px] px-[20px] bottom-0 z-0 transition-transform ">
+                    className="absolute h-[5px] w-[170px] px-[20px] bottom-0 z-0 transition-transform duration-300">
                         <div className="bg-muted-foreground rounded-full h-[5px]"/>
                     </div>
                 </div>

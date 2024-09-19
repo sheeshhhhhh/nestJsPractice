@@ -5,8 +5,10 @@ import { useLocalStorage } from "../util/localStorage";
 
 type UserInfo = {
     profile?: string,
-    email?: string
-    address?: string
+    email?: string,
+    address?: string,
+    latitude: number,
+    longitude: number
 }
 
 type User = {

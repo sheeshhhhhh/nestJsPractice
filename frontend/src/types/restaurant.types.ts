@@ -46,7 +46,7 @@ export type RestaurantOpeningHours = {
 }
 
 export type RestaurantDistance = {
-    restaurantDistance: number
+    restaurantDistance?: number
 }
 
 export type Restaurant = {
