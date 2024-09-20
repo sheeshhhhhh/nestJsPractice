@@ -11,12 +11,13 @@ import { LocationModule } from './location/location.module';
 import { CartModule } from './cart/cart.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PaymongoModule } from './paymongo/paymongo.module';
+import { OrderModule } from './order/order.module';
 
 @Module({
   imports: [AuthModule, UserModule, RestaurantModule, MenuModule, CategoryModule, 
     ConfigModule.forRoot({
       isGlobal: true
-    }), LocationModule, CartModule, PrismaModule, PaymongoModule
+    }), LocationModule, CartModule, PrismaModule, PaymongoModule, OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],

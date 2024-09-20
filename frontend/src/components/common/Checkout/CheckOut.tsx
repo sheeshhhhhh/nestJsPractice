@@ -1,60 +1,67 @@
-import { CreditCardIcon, PhilippinePeso, PhilippinePesoIcon, ReceiptTextIcon, ShieldAlert } from "lucide-react"
-import GoogleMaps from "../../PageComponents/CreateRestaurant/GoogleMaps"
-import { useAuthContext } from "../../../context/AuthContext"
+import { PhilippinePeso, PhilippinePesoIcon, ReceiptTextIcon } from "lucide-react"
 import PreviewMap from "../PreviewMap"
 import { Card, CardContent, CardFooter } from "../../ui/card"
 import { Textarea } from "../../ui/textarea"
-import { Navigate } from "react-router-dom"
-import { Dispatch, memo, SetStateAction, useState } from "react"
-import { StageStatus } from "../NavBar/NavCart"
-import toast from "react-hot-toast"
+import { memo, useState } from "react"
 import { Button } from "../../ui/button"
 import { useCartContext } from "../../../context/CartContext"
 import { Separator } from "../../ui/separator"
-import { RadioGroup, RadioGroupItem } from "../../ui/radio-group"
+import PaymentMethod, { PaymentMethodType } from "./PaymentMethod"
+import { useAuthContext } from "../../../context/AuthContext"
+import NoLocation from "./NoLocation"
+import { useMutation } from "@tanstack/react-query"
+import apiErrorHandler from "../../../util/apiErrorHandler"
+import LoadingSpinner from "../LoadingSpinner"
+import apiClient from "../../../util/apiClient"
 
 type CheckOutProps = {
     price: number | undefined,
-    setStage: Dispatch<SetStateAction<StageStatus>>
 }
 
-type PaymentMethod = 'cash' | 'gcash' | 'paymaya'
-const paymentMethods = ['cash', 'gcash', 'paymaya']
+export type checkOutInfoType = {
+    paymentMethod: PaymentMethodType,
+    DeliveryInstructions?: string,
+    deliveryFee: number,
+}
 
 const CheckOut = ({
     price,
-    setStage
 }: CheckOutProps) => {
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash')
+    const [checkOutInfo, setCheckOutInfo] = useState<checkOutInfoType>({
+        paymentMethod: 'cash',
+        DeliveryInstructions: '',
+        deliveryFee: 44, // remove later and make dynamic
+    }) 
+
     const { user } = useAuthContext()
     const { cart } = useCartContext()
     const deliveryFee = 44 // just this amount for now change later
 
-    console.log(paymentMethod)
+    if(!user?.userInfo.latitude && !user?.userInfo.longitude || !user.userInfo.address) return <NoLocation /> // for handling error
 
-    if(!user?.userInfo.latitude && !user?.userInfo.longitude || !user.userInfo.address) 
-        return (
-            <div className="w-full h-[200px] p-4 flex flex-col items-center">
-                <h2 className="text-red-600 font-medium">
-                    Error please make sure you have configure you location
-                </h2>
-                {/* provide a link for settings location or address */}
-                <div className="p-6">
-                    <ShieldAlert 
-                    size={80}
-                    />
-                </div>
-                <Button
-                onClick={() => setStage('Cart')}
-                >
-                    Go Back to Cart
-                </Button>
-            </div>
-        )
+
+    const { mutate, isPending } = useMutation({
+        mutationKey: ['checkout'],
+        mutationFn: async () => {
+            const response = await apiClient.post('/order', checkOutInfo, {
+                headers: {
+                    "Content-Type" : "application/json"
+                }
+            })
+            
+            if(response.status > 400) {
+                const message = response.data.message;
+                const error = response.data.error;
+                return apiErrorHandler({ error, message, status:response.status })
+            }
+            //redirect to payment
+            const redirectUrl = response.data.redirectPayment 
+            window.location.assign(redirectUrl)
+        }
+    })
 
     return (
         <div>
-            
             <div className="space-y-2">
                 <Card className="shadow-lg">
                     <CardContent className="pt-6 space-y-3">
@@ -75,43 +82,20 @@ const CheckOut = ({
                             {user.userInfo.address}
                         </h2>
                         <Textarea 
+                        value={checkOutInfo.DeliveryInstructions}
+                        onChange={(e) => setCheckOutInfo(prev => ({
+                            ...prev, DeliveryInstructions: e.target.value
+                        }))}
                         className="resize-none"
                         placeholder="Delivery instructions"
                         />
                     </CardContent>
                 </Card>
-                
-                <Card className="shadow-lg">
-                    <CardContent className="pt-6">
-                        {/* by default should be cash */}
-                        <div className="flex items-center gap-2 pb-2">
-                            <CreditCardIcon />
-                            <h2 className="font-bold text-lg">
-                                Payment Method
-                            </h2>
-                        </div>
-                        {/* make a radio here to sort of select */}
-                        <RadioGroup 
-                        className="gap-0"
-                        value={paymentMethod} 
-                        onValueChange={(value: PaymentMethod) => setPaymentMethod(value)}>
-                            {paymentMethods.map((paymentmethod: any, idx: number) => {
-                                return (
-                                    <div 
-                                    onClick={() => setPaymentMethod(paymentmethod)}
-                                    className={`flex justify-between items-center space-x-2 cursor-pointer
-                                    hover:bg-muted p-2 rounded-lg px-4 
-                                    ${paymentmethod === paymentMethod && 'bg-muted'}`}>
-                                        <h2 className="font-bold text-lg">
-                                            {paymentmethod}
-                                        </h2>
-                                        <RadioGroupItem value={paymentmethod} id={idx.toString()} />
-                                    </div>
-                                )
-                            })}
-                        </RadioGroup>
-                    </CardContent>
-                </Card>
+
+                <PaymentMethod 
+                setSelectedPaymentMethod={setCheckOutInfo}
+                selectedPaymentMethod={checkOutInfo.paymentMethod}
+                />
 
                 <Card className="shadow-lg">
                     <CardContent className="pt-6">
@@ -165,7 +149,7 @@ const CheckOut = ({
             </div>
             <div className="relative w-full h-[20px]">
             </div>
-            <div className="sticky z-20 bg-white py-2 px-4 w-full max-w-[502px] h-[80px] bottom-0">
+            <div className="sticky z-20 bg-white py-2 px-4 w-full h-[80px] bottom-0">
                 <div className="flex justify-between">
                     <h2 className="font-bold text-lg">
                         Total {" "}
@@ -181,9 +165,11 @@ const CheckOut = ({
                     </div>
                 </div>
                 <Button
+                disabled={isPending}
+                onClick={() => mutate()}
                 className="w-full"
                 >
-                    Place order
+                    {isPending ? <LoadingSpinner /> : "Place order"}
                 </Button>
             </div>
         </div>

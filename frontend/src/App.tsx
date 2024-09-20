@@ -14,6 +14,7 @@ import UpdateRestaurant from './Pages/UpdateRestaurant'
 import Restaurant from './Pages/Restaurant'
 import Menu from './Pages/Menu'
 import EditCartItem from './Pages/EditCartItem'
+import PaymentSuccessful from './Pages/PaymentSuccessful'
 
 function App() {
   const location = useLocation()
@@ -63,6 +64,12 @@ function App() {
         <Route path='/menu/:id' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             <Menu />
+          </PrivateRouteComponent>
+        } />
+
+        <Route path='/paymentSuccessful' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            <PaymentSuccessful />
           </PrivateRouteComponent>
         } />
 

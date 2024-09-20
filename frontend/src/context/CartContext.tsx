@@ -2,10 +2,9 @@ import { createContext, useContext, useEffect, useState, PropsWithChildren, Disp
 import apiClient from "../util/apiClient";
 import { MenuInfo } from "../types/menu.types";
 import apiErrorHandler from "../util/apiErrorHandler";
-import toast from "react-hot-toast";
 import { useAuthContext } from "./AuthContext";
 
-type RestaurantForCart = {
+export type RestaurantForCart = {
     name: string,
     address: string,
     Headerphoto: string,
@@ -14,7 +13,7 @@ type RestaurantForCart = {
     longitude: number
 }
 
-type Cart = {
+export type Cart = {
     id: string,
     restaurantId: string,
     userId: string,

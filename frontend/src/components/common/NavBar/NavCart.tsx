@@ -74,7 +74,7 @@ const NavCart = () => {
                     </div>
                 </DialogHeader>
                 {stage === 'Cart' && <Cart setOpen={setOpen} price={price} setStage={setStage} />}
-                {stage === 'CheckOut' && <CheckOut price={price} setStage={setStage} />}
+                {stage === 'CheckOut' && <CheckOut price={price} />}
             </DialogContent> 
         </Dialog>
     )

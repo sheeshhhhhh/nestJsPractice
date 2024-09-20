@@ -41,6 +41,7 @@ model userInfo {
   bio       String?
   profile   String?
   address   String?
+  // billingInformation
 
   // it should also containt this so that we can figure out if he's near the store
   latitude      Float?
@@ -167,21 +168,28 @@ model Order {
   id              String    @id @default(cuid())
   userId          String
   restaurandId    String
-  items           Json // 
   totalAmount     Float
+  
   status          OrderStatus @default(Processing)
 
-  paymentStatus   PaymentStatus @default(NotPaid)
-  deliveryAddress String
-  deliveryTime    DateTime?
-
   paymentMethod   String
+  paymentStatus   PaymentStatus @default(NotPaid)
+  
+  paymentIntentId String @unique()
+
+  //exact locaiton on the map
+  deliveryAddress String
+  latitude        Float
+  longitude       Float
+
+  deliveryTime    DateTime?
+  deliveryInstructions  String?
 
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   restaurant      Restaurant  @relation(fields: [restaurandId], references: [id], onDelete: Cascade)
   orderItems      OrderItem[]
 
-  createdAt       DateTime    @default(now())
+  createdAt       DateTime    @default(now()) // should include an expiration
 }
 
 model OrderItem {
@@ -191,7 +199,7 @@ model OrderItem {
   quantity    Int
   price       Float
 
-  order       Order   @relation(fields: [orderId], references: [id])
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menu        Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade) // to know what items info
 }
 
