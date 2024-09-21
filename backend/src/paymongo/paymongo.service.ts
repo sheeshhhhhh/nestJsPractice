@@ -96,7 +96,7 @@ export class PaymongoService {
         // better to just redirect
     }
 
-    async createPaymentMethod(userpaymentMethod: paymentMethod, userId?: string) {
+    async createPaymentMethod(userpaymentMethod: string, userId?: string) {
         // if user has biling info then automate it for him
         // let billingInformation;
         // if(userId) {
@@ -115,8 +115,9 @@ export class PaymongoService {
                     // }
                 }
             }
-        }), this.getHeaders('public'))
+        }), {...this.getHeaders('public'), validateStatus: () => true})
 
+        console.log(newPaymentMethod.data)
 
         return newPaymentMethod.data.data
     }

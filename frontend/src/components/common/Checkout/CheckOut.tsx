@@ -55,8 +55,12 @@ const CheckOut = ({
                 return apiErrorHandler({ error, message, status:response.status })
             }
             //redirect to payment
-            const redirectUrl = response.data.redirectPayment 
-            window.location.assign(redirectUrl)
+            const redirectUrl = response.data.redirectPayment
+            if(response.data.paymentMethod === 'cash') {
+                return window.location.assign(`/order/${response.data.data.id}`)
+            } else { 
+                return window.location.assign(redirectUrl)
+            }
         }
     })
 

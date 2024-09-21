@@ -5,7 +5,7 @@ import { paymentMethod } from "../entities/paymentMethods.entities";
 export class CreateOrderDto {
     @IsString()
     @IsEnum(paymentMethod)
-    paymentMethod: paymentMethod;
+    paymentMethod: string;
 
     @IsNumber()
     deliveryFee: number;

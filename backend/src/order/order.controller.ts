@@ -14,6 +14,11 @@ export class OrderController {
         return this.orderService.createOrder(body, req)
     }
 
+    @Get('/currOrder/:orderId')
+    async getCurrOrder(@Param('orderId') orderId: string, @Request() req: any) {
+        return this.orderService.getCurrentOrder(orderId, req)
+    }
+
     @Get(':paymentIntendId')
     async confirmPaymentOrder(@Param('paymentIntendId') paymentIntentId: string, @Request() req: any) {
         return this.orderService.confirmPaymentOrder(paymentIntentId, req)

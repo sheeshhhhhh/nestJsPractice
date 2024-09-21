@@ -2,8 +2,10 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import { CreateOrderDto } from './dto/createOrder.dto';
 import { PaymongoService } from 'src/paymongo/paymongo.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PaymentStatus, Prisma } from '@prisma/client';
+import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { paymentMethod as paymentMethodenum} from './entities/paymentMethods.entities';
+import { OrderStatusDto } from './dto/OrderStatus.dto';
+import { CreateorderTransactionDto } from './dto/CreateOrderTransaction.dto';
 
 @Injectable()
 export class OrderService {
@@ -40,80 +42,138 @@ export class OrderService {
         }
     }
 
+    async deleteCartTransaction(userId: string) {
+        return this.prisma.$transaction(async txprisma => {
+            const findCart = await this.prisma.cart.findFirst({
+                where: {
+                    userId: userId
+                }
+            })
+            if(findCart) { 
+                return await this.prisma.cart.delete({
+                    where: {
+                        id: findCart.id
+                    }
+                })
+            } 
+            return 
+        })
+    }
+
+    async CreateOrderTransaction({ userId, deliveryFee, paymentIntendId, paymentMethod, itemPrice, totalPrice, deliveryInstructions }: CreateorderTransactionDto) {
+        if(itemPrice || totalPrice) {
+            // if this does not exist this can be
+            itemPrice = await this.getTotalPrice(userId)
+            totalPrice = itemPrice + deliveryFee
+        }
+        
+        return await this.prisma.$transaction(async txprisma => {
+
+            const getUserInfo = await txprisma.userInfo.findFirst({
+                where: {
+                    userId: userId
+                }
+            })
+
+            if(!getUserInfo.latitude || !getUserInfo.longitude || !getUserInfo.address) {
+                throw new BadRequestException('required information is missing')
+            }
+
+            const existingCart = await txprisma.cart.findFirst({
+                where: {
+                    userId: userId
+                },
+                include: {
+                    cartItems: true
+                }
+            })
+
+            const createOrder = await txprisma.order.create({
+                data: {
+                    userId: userId,
+                    restaurandId: existingCart.restaurantId,
+                    deliveryFee: deliveryFee,
+                    totalAmount: totalPrice,
+                    subTotal: itemPrice,
+                    paymentMethod: paymentMethod.toString(),
+                    paymentIntentId: paymentIntendId,
+                    deliveryAddress: getUserInfo.address,
+                    deliveryInstructions: deliveryInstructions,
+                    latitude: getUserInfo.latitude,
+                    longitude: getUserInfo.longitude,
+                }
+            })
+
+            const orderToBeCreated = existingCart.cartItems.map((cartItem) => {
+                return {
+                    orderId: createOrder.id,
+                    menuId: cartItem.menuId,
+                    quantity: cartItem.quantity,
+                    price: cartItem.price,
+                }
+            })
+
+            //create CartItems
+            const createOrderItems = await txprisma.orderItem.createManyAndReturn({
+                data: orderToBeCreated
+            })
+            
+            return {
+                ...createOrder,
+                orderItems: createOrderItems
+            }
+        })
+    }
+
     async createOrder({
         deliveryFee, paymentMethod, DeliveryInstructions
     }: CreateOrderDto, req: any) {
+
         const userId = req.user.sub;
         const itemPrice = await this.getTotalPrice(userId)
         const totalPrice = itemPrice + deliveryFee
-
         // if it's gcash, paymaya or card then don't make order yet let them finish paying
-        // if it's cash then just make sure to take paymentstaus as notPaid
-        if(paymentMethod === paymentMethodenum.cash) {
+        if(paymentMethod === 'cash') {
             // make an order
+            const createOrderTransaction = await this.CreateOrderTransaction({ 
+                deliveryInstructions: DeliveryInstructions, 
+                paymentMethod: paymentMethod.toString(),
+                deliveryFee,
+                userId, 
+                itemPrice,
+                totalPrice,
+            })
+
+            const deleteCart = await this.deleteCartTransaction(userId)
+
+            return {
+                success: true,
+                paymentMethod: 'cash',
+                data: createOrderTransaction
+            }
         } else {
             const newPaymentIntent = await this.paymongo.createPaymentIntent(totalPrice)
             const newPaymentMethod = await this.paymongo.createPaymentMethod(paymentMethod)
             const createPayment = await this.paymongo.attachPaymentIntent(newPaymentIntent.id, newPaymentMethod.id, newPaymentIntent?.attributes?.client_key)
             // creating an order
-            const createOrderTransaction = await this.prisma.$transaction(async txprisma => {
-
-                const getUserInfo = await txprisma.userInfo.findFirst({
-                    where: {
-                        userId: userId
-                    }
-                })
-
-                if(!getUserInfo.latitude || !getUserInfo.longitude || !getUserInfo.address) {
-                    throw new BadRequestException('required information is missing')
-                }
-
-                const existingCart = await txprisma.cart.findFirst({
-                    where: {
-                        userId: userId
-                    },
-                    include: {
-                        cartItems: true
-                    }
-                })
-
-                const createOrder = await txprisma.order.create({
-                    data: {
-                        userId: userId,
-                        restaurandId: existingCart.restaurantId,
-                        totalAmount: totalPrice,
-                        paymentMethod: paymentMethod.toString(),
-                        paymentIntentId: newPaymentIntent.id,
-                        deliveryAddress: getUserInfo.address,
-                        latitude: getUserInfo.latitude,
-                        longitude: getUserInfo.longitude
-                    }
-                })
-                const orderToBeCreated = existingCart.cartItems.map((cartItem) => {
-                    return {
-                        orderId: createOrder.id,
-                        menuId: cartItem.menuId,
-                        quantity: cartItem.quantity,
-                        price: cartItem.price,
-                    }
-                })
-                //create CartItems
-                const createOrderItems = await txprisma.orderItem.createManyAndReturn({
-                    data: orderToBeCreated
-                })
-                
-                return {
-                    ...createOrder,
-                    orderItems: createOrderItems
-                }
-                // delete in the database later the cart and cartitems
+            const createOrderTransaction = await this.CreateOrderTransaction({ 
+                deliveryInstructions: DeliveryInstructions, 
+                paymentIntendId: newPaymentIntent.id,
+                paymentMethod: paymentMethod.toString(),
+                deliveryFee,
+                userId, 
+                itemPrice,
+                totalPrice,
             })
             
             if(!createOrderTransaction) {
                 throw new InternalServerErrorException('failed to create order')
             }
+            // send order receipt in the email
 
             return {
+                success: true,
+                paymentMethod: paymentMethod,
                 redirectPayment: createPayment.attributes.next_action.redirect.url,
             }
         }
@@ -128,7 +188,6 @@ export class OrderService {
 
             if(paymentStatus === 'succeeded') {
                 // add to dashboard of the restaurant
-
                 const updateOrderPayment = await this.prisma.order.update({
                     where: {
                         paymentIntentId: retreivePayment.id
@@ -143,21 +202,9 @@ export class OrderService {
                 }
 
                 // deleting a cart
-                const deleteCartTransaction = await this.prisma.$transaction(async txprisma => {
-                    const findCart = await this.prisma.cart.findFirst({
-                        where: {
-                            userId: userId
-                        }
-                    })
-                    if(findCart) { 
-                        return await this.prisma.cart.delete({
-                            where: {
-                                id: findCart.id
-                            }
-                        })
-                    } 
-                    return 
-                })
+                const deleteCartTransaction = await this.deleteCartTransaction(userId)
+
+                // give the order to the rider here because the payment is confirm
 
                 if(!deleteCartTransaction) throw new Error('failed to deleteCart please call support to help you!') 
 
@@ -179,6 +226,84 @@ export class OrderService {
             }
         } catch (error) {
             throw new InternalServerErrorException('have an internal server error please call the support')
+        }
+    }
+
+    async getCurrentOrder(orderId: string, req: any) {
+        try {
+            const userId = req.user.sub;
+
+            // make sure to get user rider location // if there are already models for that            
+            const getOrder = await this.prisma.order.findFirstOrThrow({
+                where: {
+                    AND: [
+                        {id: orderId},
+                        {userId: userId}
+                    ]
+                },
+                include: {
+                    restaurant: {
+                        select: {
+                            name: true,
+                            id: true
+                        }
+                    },
+                    orderItems: {
+                        select: {
+                            quantity: true,
+                            price: true,
+                            menu: {
+                                select: {
+                                    name: true,   
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+
+            return getOrder
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') { // don'y evenn know if this is useful
+                    throw new BadRequestException("order does not exist")
+                }
+            } 
+            throw new InternalServerErrorException()
+        }
+    }
+
+    // should only be avaiable for restaurants and riders
+    async updateOrderStatus(orderId: string, { orderStatus }: OrderStatusDto) {
+        try {
+            
+            const updateStatus = await this.prisma.order.update({
+                where: {
+                    id: orderId
+                },
+                data: {
+                    status: orderStatus
+                },
+                select: {
+                    status: true
+                }
+            })
+
+            // update user socket
+
+
+            // for rider or restaurant
+            return {
+                success: true,
+                updateStatus: updateStatus.status
+            }
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') {
+                    throw new BadRequestException('order not found')
+                } 
+            } 
+            throw new InternalServerErrorException()
         }
     }
 

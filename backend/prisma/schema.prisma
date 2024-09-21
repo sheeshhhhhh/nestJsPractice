@@ -155,8 +155,9 @@ model Menu {
 }
 
 enum OrderStatus {
-  Delivered
   Processing
+  Delivering
+  Delivered
 }
 
 enum PaymentStatus {
@@ -168,19 +169,24 @@ model Order {
   id              String    @id @default(cuid())
   userId          String
   restaurandId    String
-  totalAmount     Float
   
+  //payment
+  deliveryFee     Float
+  totalAmount     Float
+  subTotal        Float
+
   status          OrderStatus @default(Processing)
 
   paymentMethod   String
   paymentStatus   PaymentStatus @default(NotPaid)
   
-  paymentIntentId String @unique()
+  paymentIntentId String? @unique() // only for online payment
 
   //exact locaiton on the map
   deliveryAddress String
   latitude        Float
   longitude       Float
+
 
   deliveryTime    DateTime?
   deliveryInstructions  String?
