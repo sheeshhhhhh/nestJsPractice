@@ -1,7 +1,7 @@
 import { MapContainer, MapContainerProps, Marker, Popup, TileLayer } from "react-leaflet"
 import { cn } from "../../lib/utils"
 import { LatLngExpression } from "leaflet"
-
+import 'leaflet/dist/leaflet.css';
 
 type PreviewMapProps = {
     positionMarker: {

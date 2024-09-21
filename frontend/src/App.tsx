@@ -15,6 +15,7 @@ import Restaurant from './Pages/Restaurant'
 import Menu from './Pages/Menu'
 import EditCartItem from './Pages/EditCartItem'
 import PaymentSuccessful from './Pages/PaymentSuccessful'
+import Order from './Pages/Order'
 
 function App() {
   const location = useLocation()
@@ -73,6 +74,12 @@ function App() {
           </PrivateRouteComponent>
         } />
 
+        <Route path='/order/:orderId' element={
+          <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
+            <Order />
+          </PrivateRouteComponent>
+        } />
+
         <Route path='/editCart/:cartItemId' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             <EditCartItem />
@@ -84,6 +91,7 @@ function App() {
             {undefined}
           </PrivateRouteComponent>
         } />
+
         <Route path='/orderHistory' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             {undefined}
