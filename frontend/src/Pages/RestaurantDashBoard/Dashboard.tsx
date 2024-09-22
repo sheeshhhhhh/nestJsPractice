@@ -7,12 +7,14 @@ import { io } from 'socket.io-client'
 import { useAuthContext } from "../../context/AuthContext"
 import { OrderBasicInformation } from "../../types/order.types"
 import CurrentOrderCollection from "../../components/PageComponents/RestaurantDashboard/Dashboard/CurrentOrderCollection"
+import CurrentOrderHeader from "../../components/PageComponents/RestaurantDashboard/Dashboard/CurrentOrderHeader"
 
 const Dashboard = () => {
   const { user } = useAuthContext()
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    // this is use forlistening to the new orders
     const socket = io(import.meta.env.VITE_backendAPI_URL, {
       autoConnect: true,
       transports: ['websocket', 'polling'],
@@ -29,7 +31,7 @@ const Dashboard = () => {
     })
   }, []) 
 
-  const { data: currentOrders, isLoading, isError, } = useQuery({
+  const { data: currentOrders, isLoading, isError, refetch } = useQuery({
     queryKey: ['restaurantOrders'],
     queryFn: async () => {
       const response = await apiClient.get('/restaurant/getOrders')
@@ -56,6 +58,7 @@ const Dashboard = () => {
       <p className="text-muted-foreground text-lg mt-2 mb-4">
         This is all the orders that is currently need to be processed. if it's done then it will disappear
       </p>
+      <CurrentOrderHeader />
       <CurrentOrderCollection ordersCollection={currentOrders} />
     </div>
   )

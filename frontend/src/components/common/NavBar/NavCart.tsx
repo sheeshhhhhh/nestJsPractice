@@ -16,7 +16,7 @@ const NavCart = () => {
     // calculating thep rice
     const { loading, cart } = useCartContext()
     const price = useMemo(() => {
-        let totalPrice = cart?.cartItems.reduce(
+        let totalPrice = cart?.cartItems?.reduce(
             (total, currValue) => total + (currValue.price * currValue.quantity), 0)
         return totalPrice
     }, [cart?.cartItems])

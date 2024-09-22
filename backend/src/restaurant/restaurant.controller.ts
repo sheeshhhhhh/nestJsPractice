@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, Search, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { RestaurantService } from './restaurant.service';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
@@ -23,8 +23,13 @@ export class RestaurantController {
     }
 
     @Get('getOrders')
-    async getOrders(@Request() req: any) {
-        return this.restaurantService.getOrders(req)
+    async getOrders(@Request() req: any, @Query('search') search: string) {
+        return this.restaurantService.getOrders(req, search)
+    }
+
+    @Get('getOrderDetail/:orderId')
+    async getOrderDetail(@Param('orderId') orderId: string, @Request() req: any) {
+        return this.restaurantService.getOrderDetail(req, orderId)
     }
     // about restaurant
     @Get(':id')

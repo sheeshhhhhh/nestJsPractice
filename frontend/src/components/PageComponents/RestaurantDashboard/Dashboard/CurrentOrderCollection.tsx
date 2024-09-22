@@ -6,14 +6,13 @@ import {
     TableBody,
     TableCaption,
     TableCell,
-    TableFooter,
-    TableHead,
     TableHeader,
     TableRow,
 } from "../../../ui/table"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import apiClient from "../../../../util/apiClient"
 import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
 
   
 
@@ -25,6 +24,7 @@ const CurrentOrderCollection = ({
     ordersCollection
 }: CurrentOrderCollectionProps) => {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
 
     const { mutate: updateStatus, isPending, variables } = useMutation({
         mutationKey: ['updateOrderStatus'],
@@ -51,6 +51,10 @@ const CurrentOrderCollection = ({
         }
     })     
 
+    const redirectToOrderDetails = (orderId: string) => {
+        navigate('/orderDetail/' + orderId)
+    }
+
     const totalNumberOrders = ordersCollection.length
 
     return (
@@ -71,7 +75,10 @@ const CurrentOrderCollection = ({
             </TableHeader>
             <TableBody>
                 {ordersCollection.map((order) => (
-                    <TableRow key={order.id}>
+                    <TableRow 
+                    onClick={() => redirectToOrderDetails(order.id)}
+                    key={order.id} 
+                    className="cursor-pointer">
                         <TableCell>{order.id}</TableCell>
                         <TableCell>{order.paymentMethod}</TableCell>
                         <TableCell>{order.paymentStatus}</TableCell>
@@ -85,7 +92,10 @@ const CurrentOrderCollection = ({
                             <Button
                             // making sure the clicked specifir order is disabled
                             disabled={variables === order.id && isPending} 
-                            onClick={() => updateStatus(order.id)}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                updateStatus(order.id)
+                            }}
                             >
                                 Done
                             </Button>

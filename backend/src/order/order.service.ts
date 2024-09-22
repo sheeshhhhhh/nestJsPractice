@@ -276,6 +276,7 @@ export class OrderService {
         }
     }
 
+    // with orderId
     async getCurrentOrder(orderId: string, req: any) {
         try {
             const userId = req.user.sub;
@@ -323,6 +324,32 @@ export class OrderService {
         }
     }
     
+    async getOrderContext(req: any) {
+        try {
+            const userId = req.user.sub;
+            
+            const getOrder = await this.prisma.order.findFirstOrThrow({
+                where: {
+                    AND: [
+                        {userId: userId},
+                        {status: {
+                            not: OrderStatus.Delivered
+                        }}
+                    ]
+                }
+            })
+
+            return getOrder
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') {
+                    throw new BadRequestException('order not found')
+                }
+            } 
+            throw new InternalServerErrorException('failed to get order')
+        }
+    }
+
     // should only be avaiable for restaurants and riders
     async updateOrderStatus(orderId: string, { orderStatus }: OrderStatusDto) {
         try {

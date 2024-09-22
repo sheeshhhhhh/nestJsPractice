@@ -10,6 +10,7 @@ import {
 import { AuthContextProvider } from './context/AuthContext.tsx'
 import { Toaster } from 'react-hot-toast'
 import { CartContextProvider } from './context/CartContext.tsx'
+import { OrderContextProvider } from './context/OrderContext.tsx'
 
 const queryClient = new QueryClient();
 
@@ -18,9 +19,11 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <AuthContextProvider>
-          <CartContextProvider>
-            <App />
-          </CartContextProvider>
+          <OrderContextProvider>
+            <CartContextProvider>
+              <App />
+            </CartContextProvider>
+          </OrderContextProvider>
           <Toaster />
         </AuthContextProvider>
       </QueryClientProvider>

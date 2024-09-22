@@ -4,8 +4,6 @@ import { prisma } from 'prisma/db';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 import { LocationService } from 'src/location/location.service';
-import { truncateByDomain } from 'recharts/types/util/ChartUtils';
-import { get } from 'http';
 
 @Injectable()
 export class RestaurantService {
@@ -240,7 +238,7 @@ export class RestaurantService {
         }
     }
 
-    async getOrders(req: any) {
+    async getOrders(req: any, search: string) {
         try {
             const userId = req.user.sub
             const getRestaurantId = await prisma.restaurant.findFirstOrThrow({
@@ -256,7 +254,10 @@ export class RestaurantService {
                 where: {
                     AND: [
                         {restaurandId: getRestaurantId.id},
-                        {status: 'Processing'}
+                        {status: 'Processing'},
+                        {id: {
+                            contains: search
+                        }}
                     ]
                 }
             })
@@ -268,6 +269,60 @@ export class RestaurantService {
                     throw new BadRequestException('error: you have no restaurant')
                 } else {
                     throw new InternalServerErrorException()
+                }
+            }
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async getOrderDetail(req: any, orderId: string) {
+        try {
+            const userId =  req.user.sub;
+
+            const getOrderDetailPrisma = await prisma.order.findFirstOrThrow({
+                where: {
+                    AND: [
+                        {id: orderId},
+                        {restaurant: {
+                            ownerId: userId
+                        }},
+                    ]
+                },
+                include: {
+                    orderItems: {
+                        include: {
+                            menu: true 
+                        }
+                    },
+                    restaurant: {
+                        select: {
+                            name: true,
+                            phoneNumber: true,
+                            address: true,
+                            email: true
+                        }
+                    }
+                }
+            })
+
+            // to fix the n in the phone number
+            const serializeRestaurant = {
+                ...getOrderDetailPrisma.restaurant,
+                phoneNumber: Number(getOrderDetailPrisma.restaurant.phoneNumber)
+            }
+
+            const orderDetail = {
+                ...getOrderDetailPrisma,
+                restaurant: serializeRestaurant
+            }
+
+            return orderDetail
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') {
+                    throw new BadRequestException('cannot find order detail')
+                } else {
+                    throw new InternalServerErrorException('prisma error')
                 }
             }
             throw new InternalServerErrorException()

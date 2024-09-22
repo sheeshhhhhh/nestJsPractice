@@ -3,6 +3,7 @@ import apiClient from "../util/apiClient";
 import { MenuInfo } from "../types/menu.types";
 import apiErrorHandler from "../util/apiErrorHandler";
 import { useAuthContext } from "./AuthContext";
+import { useOrderContext } from "./OrderContext";
 
 export type RestaurantForCart = {
     name: string,
@@ -64,13 +65,13 @@ export const CartContextProvider = ({
     const [cart, setCart] = useState<Cart | undefined>(undefined)
     const [loading, setLoading] = useState<boolean>(true)
     const { user } = useAuthContext()
+    
     useEffect(() => {
-        if(!user || user.role === 'Business') return
         const getCart = async () => {
+            if(!user || user.role !== 'Customer') return
             setLoading(true)
             try {
                 const response = await apiClient.get('/cart')
-                
                 setCart(response.data)
             } catch (errorResponse: any) {
                 if(errorResponse.status >= 400) {

@@ -24,7 +24,12 @@ export class OrderController {
     async updateOrderStatus(@Param('orderId') orderId: string, @Body() body: OrderStatusDto) {
         return this.orderService.updateOrderStatus(orderId, body)
     }
-        
+    
+    @Get('/getOrderContext')
+    async getOrderContext(@Request() req: any) {
+        return this.orderService.getOrderContext(req)
+    }
+
     @Get(':paymentIntendId')
     async confirmPaymentOrder(@Param('paymentIntendId') paymentIntentId: string, @Request() req: any) {
         return this.orderService.confirmPaymentOrder(paymentIntentId, req)
