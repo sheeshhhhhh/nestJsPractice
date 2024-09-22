@@ -5,13 +5,15 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { paymentMethod as paymentMethodenum} from './entities/paymentMethods.entities';
 import { OrderStatusDto } from './dto/OrderStatus.dto';
-import { CreateorderTransactionDto } from './dto/CreateOrderTransaction.dto';
+import { CreateorderTransactionDto } from './dto/createOrderTransaction.dto';
+import { OrderGatewayGateway } from 'src/order-gateway/order-gateway.gateway';
 
 @Injectable()
 export class OrderService {
     constructor(
         private paymongo: PaymongoService,
-        private prisma: PrismaService
+        private prisma: PrismaService,
+        private orderGateway: OrderGatewayGateway
     ) {}
 
     async getTotalPrice(userId: string) {
@@ -67,7 +69,7 @@ export class OrderService {
             totalPrice = itemPrice + deliveryFee
         }
         
-        return await this.prisma.$transaction(async txprisma => {
+        const newOrderTransaction =  await this.prisma.$transaction(async txprisma => {
 
             const getUserInfo = await txprisma.userInfo.findFirst({
                 where: {
@@ -123,7 +125,10 @@ export class OrderService {
                 orderItems: createOrderItems
             }
         })
+
+        return newOrderTransaction
     }
+
 
     async createOrder({
         deliveryFee, paymentMethod, DeliveryInstructions
@@ -135,7 +140,7 @@ export class OrderService {
         // if it's gcash, paymaya or card then don't make order yet let them finish paying
         if(paymentMethod === 'cash') {
             // make an order
-            const createOrderTransaction = await this.CreateOrderTransaction({ 
+            const newOrder = await this.CreateOrderTransaction({ 
                 deliveryInstructions: DeliveryInstructions, 
                 paymentMethod: paymentMethod.toString(),
                 deliveryFee,
@@ -145,18 +150,40 @@ export class OrderService {
             })
 
             const deleteCart = await this.deleteCartTransaction(userId)
+            
+            // order being sent to the restaurant dashboard
+            const restaurantSocketId = this.orderGateway.getSocketId(newOrder.restaurandId)
+            this.orderGateway.io.to(restaurantSocketId).emit('updateOrders', {
+                id: newOrder.id,
+                userId: newOrder.userId,
+                restaurantId: newOrder.restaurandId,
+                status: newOrder.status,
+                totalAmount: newOrder.totalAmount,
+                subTotal: newOrder.subTotal,
+                deliveryFee: newOrder.deliveryFee,
+                paymentMethod: newOrder.paymentMethod,
+                paymentStatus: newOrder.paymentStatus,
+                paymentIntentId: newOrder.paymentIntentId || undefined,
+                deliveryAddress: newOrder.deliveryAddress,
+                latitude: newOrder.latitude,
+                longitude: newOrder.longitude,
+                deliveryTime: newOrder.deliveryTime,
+                deliveryInstructions: newOrder.deliveryInstructions,
+                createdAt: newOrder.createdAt
+            })
 
             return {
                 success: true,
                 paymentMethod: 'cash',
-                data: createOrderTransaction
+                data: newOrder
             }
         } else {
             const newPaymentIntent = await this.paymongo.createPaymentIntent(totalPrice)
             const newPaymentMethod = await this.paymongo.createPaymentMethod(paymentMethod)
             const createPayment = await this.paymongo.attachPaymentIntent(newPaymentIntent.id, newPaymentMethod.id, newPaymentIntent?.attributes?.client_key)
+
             // creating an order
-            const createOrderTransaction = await this.CreateOrderTransaction({ 
+            const newOrderTransaction = await this.CreateOrderTransaction({ 
                 deliveryInstructions: DeliveryInstructions, 
                 paymentIntendId: newPaymentIntent.id,
                 paymentMethod: paymentMethod.toString(),
@@ -166,7 +193,7 @@ export class OrderService {
                 totalPrice,
             })
             
-            if(!createOrderTransaction) {
+            if(!newOrderTransaction) {
                 throw new InternalServerErrorException('failed to create order')
             }
             // send order receipt in the email
@@ -181,7 +208,6 @@ export class OrderService {
 
     async confirmPaymentOrder(paymentIntentId: string, req: any) {
         try {
-            
             const retreivePayment = await this.paymongo.retrievePaymentIntent(paymentIntentId)
             const paymentStatus = retreivePayment.attributes.status
             const userId = req.user.sub
@@ -200,6 +226,27 @@ export class OrderService {
                 if(!updateOrderPayment) {
                     throw new InternalServerErrorException('successfully payed but failed to update order please call support')
                 }
+
+                // socket
+                const restaurantSocketId = this.orderGateway.getSocketId(updateOrderPayment.restaurandId)
+                this.orderGateway.io.to(restaurantSocketId).emit('updateOrders', {
+                    id: updateOrderPayment.id,
+                    userId: updateOrderPayment.userId,
+                    restaurantId: updateOrderPayment.restaurandId,
+                    status: updateOrderPayment.status,
+                    totalAmount: updateOrderPayment.totalAmount,
+                    subTotal: updateOrderPayment.subTotal,
+                    deliveryFee: updateOrderPayment.deliveryFee,
+                    paymentMethod: updateOrderPayment.paymentMethod,
+                    paymentStatus: updateOrderPayment.paymentStatus,
+                    paymentIntentId: updateOrderPayment.paymentIntentId || undefined,
+                    deliveryAddress: updateOrderPayment.deliveryAddress,
+                    latitude: updateOrderPayment.latitude,
+                    longitude: updateOrderPayment.longitude,
+                    deliveryTime: updateOrderPayment.deliveryTime,
+                    deliveryInstructions: updateOrderPayment.deliveryInstructions,
+                    createdAt: updateOrderPayment.createdAt
+                })
 
                 // deleting a cart
                 const deleteCartTransaction = await this.deleteCartTransaction(userId)
@@ -238,7 +285,10 @@ export class OrderService {
                 where: {
                     AND: [
                         {id: orderId},
-                        {userId: userId}
+                        {userId: userId},
+                        {status: {
+                            not: OrderStatus.Delivered
+                        }}
                     ]
                 },
                 include: {
@@ -272,7 +322,7 @@ export class OrderService {
             throw new InternalServerErrorException()
         }
     }
-
+    
     // should only be avaiable for restaurants and riders
     async updateOrderStatus(orderId: string, { orderStatus }: OrderStatusDto) {
         try {
@@ -289,10 +339,6 @@ export class OrderService {
                 }
             })
 
-            // update user socket
-
-
-            // for rider or restaurant
             return {
                 success: true,
                 updateStatus: updateStatus.status
@@ -301,9 +347,11 @@ export class OrderService {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2025') {
                     throw new BadRequestException('order not found')
-                } 
+                } else {
+                    throw new InternalServerErrorException('failed to update order status')
+                }
             } 
-            throw new InternalServerErrorException()
+            throw new InternalServerErrorException('failed to update order status')
         }
     }
 

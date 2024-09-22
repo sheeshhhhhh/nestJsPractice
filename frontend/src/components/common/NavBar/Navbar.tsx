@@ -22,7 +22,7 @@ const Navbar = () => {
                 </nav>  
 
                 <div className="flex gap-5 items-center">
-                    {user && <NavCart />}
+                    {(user && user.role === 'Customer') && <NavCart />}
                     {/* supposed to be profile */}
                     {user && <Profile />}
                 </div>

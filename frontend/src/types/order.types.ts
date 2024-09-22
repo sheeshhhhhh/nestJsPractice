@@ -34,6 +34,7 @@ export type OrderPaymentInfo = {
     deliveryFee: number; 
     paymentMethod: string;
     paymentStatus: PaymentStatus;
+    paymentIntentId?: string;
 }
 
 export type OrderDeliveryInfo = {
@@ -55,3 +56,6 @@ type RestaurantInfo = {
 export type Order = {
     orderItems: OrderItem[];
 } & OrderInfo & OrderDeliveryInfo & OrderPaymentInfo & Partial<User> & Partial<RestaurantInfo>;
+
+export type OrderBasicInformation = {} & OrderInfo & OrderPaymentInfo & OrderDeliveryInfo;
+

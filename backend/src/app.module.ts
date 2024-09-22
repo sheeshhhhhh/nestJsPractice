@@ -12,6 +12,7 @@ import { CartModule } from './cart/cart.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PaymongoModule } from './paymongo/paymongo.module';
 import { OrderModule } from './order/order.module';
+import { OrderGatewayGateway } from './order-gateway/order-gateway.gateway';
 
 @Module({
   imports: [AuthModule, UserModule, RestaurantModule, MenuModule, CategoryModule, 
@@ -20,6 +21,6 @@ import { OrderModule } from './order/order.module';
     }), LocationModule, CartModule, PrismaModule, PaymongoModule, OrderModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, OrderGatewayGateway],
 })
 export class AppModule {}

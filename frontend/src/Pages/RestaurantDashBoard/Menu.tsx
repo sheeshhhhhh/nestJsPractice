@@ -9,7 +9,7 @@ const Menu = () => {
         Menu
       </h2>
       <p className='text-muted-foreground text-lg mt-2 mb-4'>
-        this is all the manus base on categories you can add as many as you want and also delete
+        This is all the manus base on categories you can add as many as you want and also delete
         it as many times as you want. you can also make it not availble if it's not
       </p>
       <MenusHeader />

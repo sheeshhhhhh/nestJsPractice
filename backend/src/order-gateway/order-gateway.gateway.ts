@@ -23,7 +23,8 @@ export class OrderGatewayGateway implements OnGatewayInit, OnGatewayConnection, 
 
   // for handling connection and disconnection
   handleConnection(client: any, ...args: any[]) {
-    const userId = client.handshake.query.userId;
+    // this could be restaurant id for restaurants or userId for user
+    const userId = client.handshake.query.userId; 
     const socketId = client.id;
     if(userId) {
       // register user id to socket id // so that we know who is the onwer of the web socket

@@ -32,13 +32,17 @@ const Order = () => {
         queryKey: ['currOrder', orderId],
         queryFn: async () => {
             const response = await apiClient.get(`/order/currOrder/${orderId}`)
-            return response.data as Order
+            if(response.status >= 400) {
+                window.location.assign('/error')
+                return 
+            }
+            return response.data as Order 
         }, 
         retry: false
     })
 
     if(isLoading) return
-    if(!OrderInfo) return window.location.assign('/error')
+    if(!OrderInfo) return
 
     return (
         <div className="max-w-[748px] mx-auto space-y-4 p-6">

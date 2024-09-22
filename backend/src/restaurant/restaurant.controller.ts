@@ -21,6 +21,11 @@ export class RestaurantController {
     async getManyRestaurant(@Query('search') search: string) {
         return this.restaurantService.getManyRestaurant(search || '')
     }
+
+    @Get('getOrders')
+    async getOrders(@Request() req: any) {
+        return this.restaurantService.getOrders(req)
+    }
     // about restaurant
     @Get(':id')
     async getRestaurant(@Param('id') id: string, @Request() req: any) {

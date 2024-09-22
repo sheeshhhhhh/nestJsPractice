@@ -1,10 +1,11 @@
-import { Injectable, InternalServerErrorException, NotAcceptableException, NotImplementedException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotAcceptableException, NotImplementedException, UnauthorizedException } from '@nestjs/common';
 import { Prisma, Restaurant } from '@prisma/client';
 import { prisma } from 'prisma/db';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 import { LocationService } from 'src/location/location.service';
 import { truncateByDomain } from 'recharts/types/util/ChartUtils';
+import { get } from 'http';
 
 @Injectable()
 export class RestaurantService {
@@ -71,8 +72,13 @@ export class RestaurantService {
                 }
             }
         })
+
+        if(!getRestaurantInfo) {
+            throw new BadRequestException("restaurant not found")
+        }
+
         // if owner is asking for it to edit most likely
-        if(userId === getRestaurantInfo.ownerId) {
+        if(userId === getRestaurantInfo?.ownerId) {
             return this.serializephoneNumber(getRestaurantInfo, getRestaurantInfo.phoneNumber)
         }
 
@@ -99,7 +105,6 @@ export class RestaurantService {
             })
         }
 
-
         return this.serializephoneNumber({
             ...getRestaurantInfo,
             restaurantDistance: distanceOfRestaurant || undefined
@@ -111,7 +116,6 @@ export class RestaurantService {
     }: createRestaurantDto, file: Express.Multer.File) {
         try {
             if(req.user.role !== 'Business') {
-                console.log('is not business owner')
                 throw new UnauthorizedException("only business owner can create restaurant")
             }
 
@@ -149,13 +153,15 @@ export class RestaurantService {
                 newRestaurant: this.serializephoneNumber(createPrismaRestaurant, createPrismaRestaurant.phoneNumber)
             }
         } catch (error) {
-            console.log(error)
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2002') {
                     // if user already have a restaurant
                     throw new NotImplementedException("you already have a restaurant!")
+                } else {
+                    throw new InternalServerErrorException()
                 }
             }
+            throw new InternalServerErrorException()
         }
     }
 
@@ -178,7 +184,7 @@ export class RestaurantService {
                 message: "restaurant deleted"
             }
         } catch (error) {
-            console.log(error)
+            throw new InternalServerErrorException()
         }
     }
 
@@ -230,6 +236,40 @@ export class RestaurantService {
                 newRestaurant: this.serializephoneNumber(updatePrismaRestaurant, updatePrismaRestaurant.phoneNumber)
             }   
         } catch (error) {
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async getOrders(req: any) {
+        try {
+            const userId = req.user.sub
+            const getRestaurantId = await prisma.restaurant.findFirstOrThrow({
+                where: {
+                    ownerId: userId
+                },
+                select: {
+                    id: true
+                }
+            })
+
+            const getCurrentOrders = await prisma.order.findMany({
+                where: {
+                    AND: [
+                        {restaurandId: getRestaurantId.id},
+                        {status: 'Processing'}
+                    ]
+                }
+            })
+
+            return getCurrentOrders
+        } catch (error) {
+            if(error instanceof Prisma.PrismaClientKnownRequestError) {
+                if(error.code === 'P2025') {
+                    throw new BadRequestException('error: you have no restaurant')
+                } else {
+                    throw new InternalServerErrorException()
+                }
+            }
             throw new InternalServerErrorException()
         }
     }
