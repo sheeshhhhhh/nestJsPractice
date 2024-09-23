@@ -24,6 +24,6 @@ async function bootstrap() {
     credentials: true, // If you need to include cookies or auth headers
   });
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen((process.env.PORT, '0.0.0.0' )|| 3000);
 }
 bootstrap();
