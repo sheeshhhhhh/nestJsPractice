@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react"
 import { handleDrag, handleDrop, handleFileChange } from '../../util/FileInput.util'
 import { Button } from "../ui/button"
-import { Icon, UploadIcon } from 'lucide-react';
+import {  UploadIcon } from 'lucide-react';
 
 
 type HeaderPhotoInputProps = {

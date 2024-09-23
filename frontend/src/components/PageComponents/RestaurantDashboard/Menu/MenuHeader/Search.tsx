@@ -12,7 +12,7 @@ const Search = () => {
     const restaurantId = user?.restaurant?.id;
 
     const queryClient = useQueryClient();
-    const { data } = useQuery({
+    const { isPending } = useQuery({
         queryKey: ['Menusearch', search],
         queryFn: async () => {
             const response = await apiClient.get(
@@ -38,6 +38,7 @@ const Search = () => {
     return (
         <div>
             <Input 
+            disabled={isPending}
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

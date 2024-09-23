@@ -16,7 +16,7 @@ import GoogleMaps from "./GoogleMaps"
 
 
 const Form = () => {
-    const { register, handleSubmit, getValues, formState: { errors, isLoading } } = useForm<FormRestaurant>()
+    const { register, handleSubmit, getValues, formState: { errors } } = useForm<FormRestaurant>()
     const [file, setFile] = useState<any>()
     const [latlng, setLatLng] = useState<Partial<RestaurantLocation>>({
         latitude: undefined, // 14.821306677310664
@@ -42,6 +42,9 @@ const Form = () => {
                 }
             }
         )
+        if(response.status >= 400) {
+            return toast.error(response.data.message)
+        }
         return <Navigate to={'/Dashboard'} />
        
     }

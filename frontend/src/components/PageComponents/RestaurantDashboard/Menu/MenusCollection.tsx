@@ -1,11 +1,10 @@
 import { useQuery } from "@tanstack/react-query"
 import { useAuthContext } from "../../../../context/AuthContext"
-import { MenuInfo } from "../../../../types/menu.types"
+import { MenuInfo, MenuInfoCategory } from "../../../../types/menu.types"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table"
 import apiClient from "../../../../util/apiClient"
 import apiErrorHandler from "../../../../util/apiErrorHandler"
 import LoadingSpinner from "../../../common/LoadingSpinner"
-import { MoreHorizontal } from "lucide-react"
 import MenuSettings from "./MenuSettings"
 
 const MenusCollection = () => {
@@ -60,7 +59,7 @@ const MenusCollection = () => {
 }
 
 type MenuCardProps = {
-    menu: MenuInfo    
+    menu: MenuInfoCategory  
 }
 
 const MenuCard = ({
@@ -71,7 +70,7 @@ const MenuCard = ({
     return (
         <TableRow key={menu.id}>
             <TableCell>{menu.name}</TableCell>
-            <TableCell>{menu.category.CategoryName}</TableCell>
+            <TableCell>{menu?.category?.CategoryName}</TableCell>
             <TableCell
             className={menu.availability ? '' : 'text-red-500'}
             >{availability}</TableCell>

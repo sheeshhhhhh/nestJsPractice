@@ -25,7 +25,7 @@ const Search = () => {
             console.log(error) // make a toast for this later
         },
         onSuccess: async (data) => {
-            await queryClient.setQueryData(['restaurants'], (oldData: any) => {
+            await queryClient.setQueryData(['restaurants'], () => {
                 return [
                     ...data
                 ]

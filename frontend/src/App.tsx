@@ -23,7 +23,7 @@ function App() {
   const { user, loading } = useAuthContext()
 
   const loginLink = `/login?next=${location.pathname}`
-  const isBusinessRole = user && user?.role === 'Business'
+  // const isBusinessRole = user && user?.role === 'Business'
   if(loading) {
     return null
   }

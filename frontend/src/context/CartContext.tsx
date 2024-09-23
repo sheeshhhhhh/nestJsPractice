@@ -3,7 +3,6 @@ import apiClient from "../util/apiClient";
 import { MenuInfo } from "../types/menu.types";
 import apiErrorHandler from "../util/apiErrorHandler";
 import { useAuthContext } from "./AuthContext";
-import { useOrderContext } from "./OrderContext";
 
 export type RestaurantForCart = {
     name: string,

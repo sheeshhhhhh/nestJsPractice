@@ -3,7 +3,6 @@ import { OrderBasicInformation } from "../types/order.types";
 import { useAuthContext } from "./AuthContext";
 import apiClient from "../util/apiClient";
 import toast from "react-hot-toast";
-import apiErrorHandler from "../util/apiErrorHandler";
 
 export type ContextValueType = {
     order: OrderBasicInformation | undefined,

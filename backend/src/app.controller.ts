@@ -1,8 +1,8 @@
-import { Controller, Get, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Request,  UseGuards } from '@nestjs/common';
 import { prisma } from 'prisma/db';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-@Controller()
+@Controller('api')
 export class AppController {
   @UseGuards(JwtAuthGuard)
   @Get('profile')

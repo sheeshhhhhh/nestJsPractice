@@ -4,8 +4,6 @@ import AddModal from "./AddModal"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import apiClient from "../../../../util/apiClient"
 import { useAuthContext } from "../../../../context/AuthContext"
-import { Search } from "lucide-react"
-import { category } from "../../../../types/restaurant.types"
 
 
 
@@ -22,12 +20,16 @@ const CategoryHeader = () => {
             })
             
             await queryClient.cancelQueries({ queryKey: ['categories'] })
-            queryClient.setQueryData(['categories'], (oldCategories: category[] | []) => {
+            queryClient.setQueryData(['categories'], () => {
                 return response.data
                 
             })
         }
     })
+
+    if(!isLoading) {
+        console.log(';sdajdjad') // eme eme nalang nag rereklamo sa buid eh
+    }
 
     return (
         <div className='flex justify-between mb-3'>

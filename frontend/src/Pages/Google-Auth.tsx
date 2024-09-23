@@ -5,7 +5,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner'
 
 // this is build just for handling the token and redirect instantly
 const GoogleAuth = () => {
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
     const { setItem } = useLocalStorage<string>('access_token')
 
     useEffect(() => {

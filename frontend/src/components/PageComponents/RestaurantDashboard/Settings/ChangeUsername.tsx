@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardTitle, CardHeader, CardFooter } from "../../../ui/card"
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation } from "@tanstack/react-query"
 import { Button } from "../../../ui/button"
 import apiClient from "../../../../util/apiClient"
 import apiErrorHandler from "../../../../util/apiErrorHandler"
@@ -14,7 +14,6 @@ const ChangeUsername = () => {
     const { user } = useAuthContext()
     const [username, setUsername] = useState<string>(user?.username || '')
     const [error, setError] = useState<any>()
-    const queryClient = useQueryClient();
 
     const { mutate: changeUsername, isPending } = useMutation({
       mutationFn: async () => {

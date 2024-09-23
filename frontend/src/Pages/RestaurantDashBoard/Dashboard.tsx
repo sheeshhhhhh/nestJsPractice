@@ -31,7 +31,7 @@ const Dashboard = () => {
     })
   }, []) 
 
-  const { data: currentOrders, isLoading, isError, refetch } = useQuery({
+  const { data: currentOrders, isLoading, isError } = useQuery({
     queryKey: ['restaurantOrders'],
     queryFn: async () => {
       const response = await apiClient.get('/restaurant/getOrders')

@@ -1,0 +1,17 @@
+{
+  "name": "nestjs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start:backend": "cd backend && npm run build && npm run start:dev",
+    "start:frontend": "cd frontend && npm run build && npm run preview",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}

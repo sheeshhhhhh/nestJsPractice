@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, SetStateAction, TextareaHTMLAttributes } from "react"
+import { ChangeEvent, Dispatch, SetStateAction } from "react"
 import { FormRestaurant, RestaurantLocation } from "../../../types/restaurant.types"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"

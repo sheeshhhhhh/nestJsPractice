@@ -3,8 +3,6 @@ import { Dialog, DialogHeader, DialogContent, DialogTitle, DialogTrigger } from 
 import { Button } from "../../../ui/button"
 import { DropdownMenuItem } from "../../../ui/dropdown-menu"
 import MenuForm from "./MenuHeader/MenuForm"
-import { useQuery } from "@tanstack/react-query"
-import apiClient from "../../../../util/apiClient"
 import { MenuInfo } from "../../../../types/menu.types"
 
 type UpdateMenuProps= {

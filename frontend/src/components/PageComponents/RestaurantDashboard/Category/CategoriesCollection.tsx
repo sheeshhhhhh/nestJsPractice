@@ -1,7 +1,7 @@
 import { useAuthContext } from '../../../../context/AuthContext'
 import { useQuery } from '@tanstack/react-query'
 import apiClient from '../../../../util/apiClient'
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '../../../ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../ui/table'
 import { category } from '../../../../types/restaurant.types'
 import { Card } from '../../../ui/card'
 import CategoryMenu from './CategoryMenu'

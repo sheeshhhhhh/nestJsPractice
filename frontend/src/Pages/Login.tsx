@@ -16,7 +16,7 @@ const Login = () => {
         username: '',
         password: ''
     })
-    const [searchParams, setSearchParams] = useSearchParams()
+    const [searchParams] = useSearchParams()
     const { setItem } = useLocalStorage<string>('access_token')
     const next = searchParams.get('next')
 

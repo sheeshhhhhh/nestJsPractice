@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, RefObject, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, SetStateAction } from "react";
 
 export type fileOnDragEvent = React.DragEvent<HTMLDivElement | HTMLLabelElement>;
 
