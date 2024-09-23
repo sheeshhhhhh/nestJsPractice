@@ -23,7 +23,7 @@ const Login = () => {
 
     const { mutate: login, isPending } = useMutation({
         mutationFn: async () => {
-            const response = await apiClient.post('http://localhost:3000/auth/login',
+            const response = await apiClient.post('auth/login',
                 JSON.stringify(loginInput)
                 ,
                 {
@@ -38,7 +38,7 @@ const Login = () => {
             if(data.access_token) {
                 setItem(data.access_token)
                 next ? 
-                window.location.assign(`http://localhost:5173${next}`) :
+                window.location.assign(`${import.meta.env.VITE_client_BASE_URL}${next}`) :
                 window.location.assign(`http://localhost:5173`)
             }
         }

@@ -13,7 +13,7 @@ import { AuthService } from './auth.service';
 import { OwnerCreateDto, UserCreateDto } from './dto';
 import { GoogleOAuthGuard } from './googleAuthGuard';
 
-@Controller('api/auth')
+@Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
