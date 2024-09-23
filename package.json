@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start:backend": "cd frontend && npm run start:dev",
-    "start:frontend": "cd backend npm run preview",
+    "start:backend": "cd backend && npm run start:dev",
+    "start:frontend": "cd frontend && npm run preview",
     "build": "npm install && cd frontend && npm install && npm run build && cd ../backend && npm install &&npm run build",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },
