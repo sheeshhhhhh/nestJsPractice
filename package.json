@@ -6,7 +6,8 @@
     "start:backend": "cd backend && npm run start:prod",
     "start:frontend": "cd frontend && npm run preview",
     "build": "npm install && cd frontend && npm install && npm run build && cd ../backend && npm install &&npm run build",
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "dev" : "concurrently \"cd backend && npm run start:dev\" \"cd frontend && npm run dev\""
   },
   "keywords": [],
   "author": "",

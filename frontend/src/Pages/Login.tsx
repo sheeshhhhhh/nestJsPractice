@@ -5,6 +5,7 @@ import { Button } from "../components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import { Input } from "../components/ui/input"
 import { useLocalStorage } from "../util/localStorage"
+import apiClient from "@/util/apiClient"
 
 type loginInput = {
     username: string,
@@ -22,16 +23,17 @@ const Login = () => {
 
     const { mutate: login, isPending } = useMutation({
         mutationFn: async () => {
-            const res = await fetch('http://localhost:3000/auth/login', {
+            const response = await apiClient.post('http://localhost:3000/auth/login',
+                JSON.stringify(loginInput)
+                ,
+                {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json'
                 },
-                body: JSON.stringify(loginInput),
-                credentials: 'include'
             })
-            const data = await res.json()
 
+            const data = response.data
             if(data.error) throw new Error(data.error)
             if(data.access_token) {
                 setItem(data.access_token)

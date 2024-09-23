@@ -18,6 +18,7 @@ async function bootstrap() {
     prefix: '/MenuPhoto'
   })
 
+
   app.enableCors({
     origin: process.env.CLIENT_BASE_URL, // Specify your frontend origin
     methods: 'GET,POST,PUT,DELETE,PATCH', // Allowed methods
