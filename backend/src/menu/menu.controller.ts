@@ -2,9 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request, Uplo
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/CreateMenu.dto';
 import { UpdateMenuDto } from './dto/UpdateMenu.dtio';
-import { isBusinessOwner } from 'src/guards/businessOwner.guard';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { getAllMenusDto } from './dto/getAllMenus.dto';
+import { getAllMenusDto } from './dto/GetAllMenus.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import diskMulterStorage from 'src/util/discMulterStorage';
 
