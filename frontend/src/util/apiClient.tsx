@@ -2,8 +2,9 @@ import axios from 'axios';
 import { useLocalStorage } from './localStorage';
 
 const apiClient = axios.create({
-    baseURL: import.meta.env.VITE_backendAPI_URL 
+    baseURL: '/api',
 })
+// i don't know why it's giving me 4000 when it's supposed to be 3000
 
 apiClient.interceptors.request.use((config) => {
     const { getItem } = useLocalStorage<string>('access_token')

@@ -37,7 +37,7 @@ const CheckOut = ({
     const { cart } = useCartContext()
     const deliveryFee = 44 // just this amount for now change later
 
-    if(!user?.userInfo.latitude && !user?.userInfo.longitude || !user.userInfo.address) return <NoLocation /> // for handling error
+    if(!user?.userInfo?.latitude && !user?.userInfo?.longitude || !user?.userInfo?.address) return <NoLocation /> // for handling error
 
 
     const { mutate, isPending } = useMutation({

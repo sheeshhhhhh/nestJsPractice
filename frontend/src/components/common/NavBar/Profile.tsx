@@ -43,7 +43,7 @@ const Profile = () => {
                     <Button 
                     onClick={() => {
                         localStorage.removeItem('access_token')
-                        window.location.assign(`http://localhost:5173/login?next=${location.pathname}`)
+                        window.location.assign(`${import.meta.env.VITE_client_BASE_URL}/login?next=${location.pathname}`)
                     }}
                     variant={'ghost'} 
                     className="flex justify-start items-center"

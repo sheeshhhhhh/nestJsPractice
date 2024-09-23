@@ -9,11 +9,10 @@ const GoogleAuth = () => {
     const { setItem } = useLocalStorage<string>('access_token')
 
     useEffect(() => {
-
             const token = searchParams.get('token')
             if(token) {
                 setItem(token)
-                window.location.assign('http://localhost:5173')
+                window.location.assign(import.meta.env.VITE_client_BASE_URL)
             }
     }, [])
 

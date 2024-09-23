@@ -13,12 +13,18 @@ import { PrismaModule } from './prisma/prisma.module';
 import { PaymongoModule } from './paymongo/paymongo.module';
 import { OrderModule } from './order/order.module';
 import { OrderGatewayGateway } from './order-gateway/order-gateway.gateway';
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path';
 
 @Module({
   imports: [AuthModule, UserModule, RestaurantModule, MenuModule, CategoryModule, 
     ConfigModule.forRoot({
       isGlobal: true
-    }), LocationModule, CartModule, PrismaModule, PaymongoModule, OrderModule
+    }), 
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../../../', 'frontend', 'dist'),
+    }),
+    LocationModule, CartModule, PrismaModule, PaymongoModule, OrderModule
   ],
   controllers: [AppController],
   providers: [AppService, OrderGatewayGateway],

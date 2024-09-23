@@ -18,6 +18,7 @@ async function bootstrap() {
     prefix: '/MenuPhoto'
   })
 
+  app.setGlobalPrefix('/api');
 
   app.enableCors({
     origin: process.env.CLIENT_BASE_URL, // Specify your frontend origin

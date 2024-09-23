@@ -37,7 +37,7 @@ const SignupUser = ({
         mutationFn: async () => {
             if(signupInfo.password !== signupInfo.confirmPassword) return 
 
-            const response = await apiClient.post('http://localhost:3000/auth/signUp', {
+            const response = await apiClient.post('/auth/signUp', {
                 username: signupInfo.username,
                 name: signupInfo.username,
                 password: signupInfo.password,

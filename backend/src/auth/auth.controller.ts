@@ -10,7 +10,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
-import { OwnerCreateDto, UserCreateDto } from './dto';
+import {  UserCreateDto } from './dto';
 import { GoogleOAuthGuard } from './googleAuthGuard';
 
 @Controller('auth')
@@ -26,7 +26,7 @@ export class AuthController {
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(@Request() req: any, @Response() res: any) {   
     const token = await this.authService.validateGoogle(req.user)
-    return res.redirect(`http://localhost:5173/google-auth?token=${token.access_token}`)
+    return res.redirect(`${process.env.CLIENT_BASE_URL}/google-auth?token=${token.access_token}`)
   }
 
   // credentials login

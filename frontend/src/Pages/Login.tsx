@@ -39,7 +39,7 @@ const Login = () => {
                 setItem(data.access_token)
                 next ? 
                 window.location.assign(`${import.meta.env.VITE_client_BASE_URL}${next}`) :
-                window.location.assign(`http://localhost:5173`)
+                window.location.assign(`${import.meta.env.VITE_client_BASE_URL}`)
             }
         }
     })
@@ -95,13 +95,12 @@ const Login = () => {
                         Login
                     </Button>
 
-                    <Link to={'http://localhost:3000/auth/google-login'}>
-                        <Button 
-                        className="w-[200px]"
-                        variant={'outline'} >
-                            Google
-                        </Button>
-                    </Link>
+                    <Button 
+                    onClick={() => window.location.assign(`${import.meta.env.VITE_backendAPI_URL}/auth/google-login`)}
+                    className="w-[200px]"
+                    variant={'outline'} >
+                        Google
+                    </Button>
 
                 </CardFooter>
             </Card>

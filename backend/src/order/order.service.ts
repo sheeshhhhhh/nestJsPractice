@@ -3,7 +3,6 @@ import { CreateOrderDto } from './dto/createOrder.dto';
 import { PaymongoService } from 'src/paymongo/paymongo.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
-import { paymentMethod as paymentMethodenum} from './entities/paymentMethods.entities';
 import { OrderStatusDto } from './dto/OrderStatus.dto';
 import { CreateorderTransactionDto } from './dto/CreateOrderTransaction.dto';
 import { OrderGatewayGateway } from 'src/order-gateway/order-gateway.gateway';

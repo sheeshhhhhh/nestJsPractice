@@ -2,18 +2,20 @@
   "name": "nestjs",
   "version": "1.0.0",
   "main": "index.js",
+  "packageManager": "npm@10.8.2",
   "scripts": {
     "start:backend": "cd backend && npm run start:prod",
-    "start:frontend": "cd frontend && npm run preview",
+
     "build": "npm install && cd frontend && npm install && npm run build && cd ../backend && npm install &&npm run build",
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "dev" : "concurrently \"cd backend && npm run start:dev\" \"cd frontend && npm run dev\""
+    "start": "npm run start:backend",
+    "dev": "concurrently \"cd backend && npm run start:dev\" \"cd frontend && npm run dev\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "concurrently": "^9.0.1",
+    "turbo": "^2.1.2"
   }
 }
