@@ -5,7 +5,7 @@
   "scripts": {
     "start:backend": "npm run start:dev",
     "start:frontend": "npm run preview",
-    "build": "cd frontend && npm install && npm run build && cd ../backend && npm install &&npm run build",
+    "build": "npm install && cd frontend && npm install && npm run build && cd ../backend && npm install &&npm run build",
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
   },  
   "keywords": [],
