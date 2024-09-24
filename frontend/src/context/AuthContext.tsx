@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { PropsWithChildren } from "react";
 import apiClient from "../util/apiClient";
 import { useLocalStorage } from "../util/localStorage";
+import { useNavigate } from "react-router-dom";
 
 type UserInfo = {
     profile?: string,
@@ -44,18 +45,23 @@ export const AuthContextProvider = ({ children } : PropsWithChildren) => {
     const [user, setUser] = useState<User | undefined>(undefined)
     const [loading, setLoading] = useState<boolean>(true)
     const { removeItem } = useLocalStorage<string>('access_token')
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getUser = async () => {
             setLoading(true)
             try {
-                const user = await apiClient.get('/auth/check')
-                if(user.status === 401) {
+                const response = await apiClient.get('/auth/check')
+
+                if(response.status === 401) {
                     removeItem()
-                }
-                if(user) {
+                } else if (response.status === 406) {
+                    return navigate(`/setLocation`)
+                } 
+                
+                if(response) {
                     // verify role
-                    setUser(user.data)
+                    setUser(response.data)
                 }
                 
             } catch (error: any) {

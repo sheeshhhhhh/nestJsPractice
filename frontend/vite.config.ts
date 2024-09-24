@@ -1,25 +1,33 @@
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
 
-
 const __dirname = path.resolve()
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
-  },
-  server: {
-    port: 3000,
-    proxy: {
-      "/api" : {
-        target: 'https://nestjspractice.onrender.com/api',
-      },
-      // changeOrigin: true,
+export default defineConfig(({ mode }) => {
+  
+  const env = loadEnv(mode, process.cwd())
+
+  const backendUrl = env.VITE_backendAPI_URL
+
+  if(!backendUrl) throw new Error('Backend API URL is required')
+
+  return { 
+    plugins: [react()],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src")
+      }
+    },
+    server: {
+      proxy: {
+        "/api" : {
+          changeOrigin: true,
+          target: backendUrl,
+          rewrite: (path) => path.replace(/^\/api/, '')
+        },
+      }
     }
   }
 })

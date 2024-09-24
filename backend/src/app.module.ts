@@ -16,16 +16,32 @@ import { OrderGatewayGateway } from './order-gateway/order-gateway.gateway';
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path';
 
+const software_Status = process.env.SOFTWARE_STATUS 
+
+const imports = [
+  AuthModule, 
+  UserModule, 
+  RestaurantModule, 
+  MenuModule, 
+  CategoryModule,
+  LocationModule, 
+  CartModule, 
+  PrismaModule, 
+  PaymongoModule, 
+  OrderModule,
+  ConfigModule.forRoot({
+    isGlobal: true
+  }), 
+]
+
+if(software_Status === 'production') {
+  imports.push(ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '../../../', 'frontend', 'dist'),
+  }))
+}
+
 @Module({
-  imports: [AuthModule, UserModule, RestaurantModule, MenuModule, CategoryModule, 
-    ConfigModule.forRoot({
-      isGlobal: true
-    }), 
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../../../', 'frontend', 'dist'),
-    }),
-    LocationModule, CartModule, PrismaModule, PaymongoModule, OrderModule
-  ],
+  imports: imports,
   controllers: [AppController],
   providers: [AppService, OrderGatewayGateway],
 })

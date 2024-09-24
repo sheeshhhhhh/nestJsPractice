@@ -14,6 +14,7 @@ import { Express } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { changeUserInfoDto } from './dto/ChangeUserInfo';
 import diskMulterStorage from 'src/util/discMulterStorage';
+import { SetLocationDto } from './dto/SetLocation.dto';
 
 @UseGuards(JwtAuthGuard) // This applies JWT authentication to all routes in this controller
 @Controller('user')
@@ -56,4 +57,9 @@ export class UserController {
   async changeAddress(@Request() req: any, @Body() body: { address : string }) {
     return this.userService.changeAddress(req, body.address)
   }
+
+  @Post('setLocation')
+  async setLocation(@Body() body: SetLocationDto, @Request() req: any) {
+    return this.userService.setLocation(body, req)
+  }  
 }

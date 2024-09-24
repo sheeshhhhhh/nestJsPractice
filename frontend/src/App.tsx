@@ -17,6 +17,7 @@ import EditCartItem from './Pages/EditCartItem'
 import PaymentSuccessful from './Pages/PaymentSuccessful'
 import Order from './Pages/Order'
 import OrderDetails from './Pages/OrderDetails'
+import SetLocation from './Pages/SetLocation'
 
 function App() {
   const location = useLocation()
@@ -51,6 +52,7 @@ function App() {
         <Route path='/login' element={!user ? <Login /> : <Navigate to={`/`} />} />
         <Route path='/signup' element={!user ? <SignUp /> : <Navigate to={`/`} />} />
         <Route path='/google-auth' element={<GoogleAuth />} />
+        <Route path='/setLocation' element={<SetLocation />} />
 
         <Route path='/' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >

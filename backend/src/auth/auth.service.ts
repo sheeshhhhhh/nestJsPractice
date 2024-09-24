@@ -8,6 +8,7 @@ import { Prisma, PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { loginDTO, OwnerCreateDto, UserCreateDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
+import { notContains } from 'class-validator';
 
 @Injectable()
 export class AuthService {
@@ -149,7 +150,7 @@ export class AuthService {
 
   async check(req: any) {
     if (req.user) {
-      return this.prisma.user.findFirst({
+      const getUser = await this.prisma.user.findFirst({
         where: {
           id: req.user.sub,
         },
@@ -174,6 +175,14 @@ export class AuthService {
           }
         },
       });
+
+      // check if user has location if not then throw error
+      
+      if(!getUser.userInfo.latitude || !getUser.userInfo.longitude || !getUser.userInfo.address)  {
+        throw new NotAcceptableException(`please set your location first`)
+      }  
+
+      return getUser;
     } else {
       return undefined;
     }

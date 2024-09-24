@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { prisma } from 'prisma/db';
 import { changePasswordDto } from './dto/ChangePasswordDto';
 import { changeUserInfoDto } from './dto/ChangeUserInfo';
+import { SetLocationDto } from './dto/SetLocation.dto';
 
 @Injectable()
 export class UserService {
@@ -191,6 +192,43 @@ export class UserService {
       success: true,
       message: 'address has been changed',
       newAddress: changeAddress.address
+    }
+  }
+
+  async setLocation(body: SetLocationDto, req: any) {
+    try {
+      const userId = req.user.sub;
+
+      const setLocationPrisma = await prisma.userInfo.upsert({
+        where: {
+          userId: userId,
+        },
+        update: {
+          latitude: body.latitude,
+          longitude: body.longitude,
+          address: body.address,
+        },
+        create: {
+          userId: userId,
+          latitude: body.latitude,
+          longitude: body.longitude,
+          address: body.address,
+        },
+        select: {
+          latitude: true,
+          longitude: true,
+          address: true,
+        },
+      })
+
+      return setLocationPrisma;
+    } catch (error) {
+      if(error instanceof Prisma.PrismaClientKnownRequestError) {
+        if(error.code === 'P2003') {
+          throw new NotImplementedException('userId provided does not exist')
+        }
+        throw new InternalServerErrorException()
+      }
     }
   }
 
