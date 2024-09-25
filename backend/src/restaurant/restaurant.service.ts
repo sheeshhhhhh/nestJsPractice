@@ -4,6 +4,7 @@ import { prisma } from 'prisma/db';
 import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 import { LocationService } from 'src/location/location.service';
+import { truncateByDomain } from 'recharts/types/util/ChartUtils';
 
 @Injectable()
 export class RestaurantService {
@@ -64,6 +65,20 @@ export class RestaurantService {
                         menu: {
                             where: {
                                 availability: true
+                            }
+                        }
+                    }
+                },
+                reviews: {
+                    include: {
+                        user: {
+                            select: {
+                                name: true,
+                                userInfo: {
+                                    select: {
+                                        profile: true
+                                    }
+                                }
                             }
                         }
                     }

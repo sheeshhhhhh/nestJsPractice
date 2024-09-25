@@ -15,6 +15,7 @@ import { OrderModule } from './order/order.module';
 import { OrderGatewayGateway } from './order-gateway/order-gateway.gateway';
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'path';
+import { ReviewModule } from './review/review.module';
 
 const software_Status = process.env.SOFTWARE_STATUS 
 
