@@ -5,6 +5,7 @@ import apiErrorHandler from "../util/apiErrorHandler"
 import RestaurantHeader from "../components/PageComponents/Restaurant/RestaurantHeader"
 import { RestaurantWithCategories } from "../types/restaurant.types"
 import RestaurantItems from "../components/PageComponents/Restaurant/RestaurantItems"
+import RestaurantReviews from "@/components/PageComponents/Restaurant/RestaurantReviews"
 
 const Restaurant = () => {
     const { id } = useParams()
@@ -33,7 +34,7 @@ const Restaurant = () => {
         <div className="max-w-[1050px] w-full mx-auto p-6">
             <RestaurantHeader restaurant={restaurantInfo} />
             {/* <PastOrders /> */}
-            {/* put seperator later */}
+            <RestaurantReviews reviews={restaurantInfo.reviews} />
             <RestaurantItems restaurant={restaurantInfo} />
         </div>
     )

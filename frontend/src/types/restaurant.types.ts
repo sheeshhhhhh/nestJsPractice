@@ -1,4 +1,5 @@
 import { MenuInfo } from "./menu.types"
+import { Reviews } from "./review.type"
 
 export enum  businessStatus {
     Open = "Open",
@@ -50,11 +51,12 @@ export type RestaurantDistance = {
 }
 
 export type Restaurant = {
-    openingHours: RestaurantOpeningHours
+    openingHours: RestaurantOpeningHours,
 } & RestaurantInfo & RestaurantLocation & Partial<RestaurantDistance>
 
 export type RestaurantWithCategories = {
-    categories?: category[]
+    categories?: category[],
+    reviews?: Reviews
 } & Restaurant
 
 export type FormRestaurant = {

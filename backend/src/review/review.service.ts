@@ -62,6 +62,26 @@ export class ReviewService {
         }
     }
 
+    // will get the review of the user to a specific restaurant
+    async getUserReview(userId: string, restaurantId: string) {
+        try {
+            
+            const getuserReviewPrisma = await this.prisma.review.findUnique({
+                where: {
+                    userId_restaurantId: {
+                        userId: userId,
+                        restaurantId: restaurantId
+                    }
+                }
+            })
+
+
+            return this.getUserReview
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
+    }
+
     async addReview(body: AddReviewDto, req: any) {
         try {
             const userId = req.user.sub;
@@ -72,6 +92,18 @@ export class ReviewService {
                     comment: body.comment,
                     restaurantId: body.restaurantId,
                     userId: userId
+                },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            userInfo: {
+                                select: {
+                                    profile: true
+                                }
+                            }
+                        }
+                    }
                 }
             })
 
@@ -79,9 +111,10 @@ export class ReviewService {
         } catch (error) {
             if(error instanceof Prisma.PrismaClientKnownRequestError) {
                 if(error.code === 'P2002') {
-                    throw new NotFoundException('Restaurant not found')
+                    throw new NotFoundException('you can only have one review per restau')
                 }
             }    
+            console.log(error)
             throw new InternalServerErrorException()
         }
     }    
@@ -99,6 +132,18 @@ export class ReviewService {
                 },
                 data: {
                     ...body
+                },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            userInfo: {
+                                select: {
+                                    profile: true
+                                }
+                            }
+                        }
+                    }
                 }
             })
 

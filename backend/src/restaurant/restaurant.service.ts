@@ -5,10 +5,13 @@ import { createRestaurantDto } from './dto/CreateRestaurant.dto';
 import { updateRestaurantDto } from './dto/UpdateRestaurant.dto';
 import { LocationService } from 'src/location/location.service';
 import { truncateByDomain } from 'recharts/types/util/ChartUtils';
+import { ReviewService } from 'src/review/review.service';
 
 @Injectable()
 export class RestaurantService {
-    constructor(private locationService: LocationService) {}
+    constructor(
+        private locationService: LocationService,
+    ) {}
 
     //util
     serializephoneNumber(body: any, phoneNumber: bigint) {
@@ -55,6 +58,8 @@ export class RestaurantService {
         // get other info of restarant later like if following or not and 
         // also the purchase history from restaurant
         const userId = req.user.sub
+
+
         const getRestaurantInfo = await prisma.restaurant.findFirst({
             where: {
                 id: id
@@ -70,6 +75,10 @@ export class RestaurantService {
                     }
                 },
                 reviews: {
+                    where: {
+                        userId: userId,
+                        restaurantId: id
+                    },
                     include: {
                         user: {
                             select: {
@@ -81,7 +90,8 @@ export class RestaurantService {
                                 }
                             }
                         }
-                    }
+                    },
+                    take: 5 // if user has a review get 4 + userReview = 5
                 }
             }
         })
@@ -120,7 +130,7 @@ export class RestaurantService {
 
         return this.serializephoneNumber({
             ...getRestaurantInfo,
-            restaurantDistance: distanceOfRestaurant || undefined
+            restaurantDistance: distanceOfRestaurant || undefined,
         }, getRestaurantInfo.phoneNumber)
     }
 

@@ -30,6 +30,7 @@ const imports = [
   PrismaModule, 
   PaymongoModule, 
   OrderModule,
+  ReviewModule,
   ConfigModule.forRoot({
     isGlobal: true
   }), 
