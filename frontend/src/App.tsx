@@ -123,6 +123,13 @@ function App() {
             <OrderDetails />
           </PrivateRouteComponent>
         } />
+
+        {/* for Riders */}
+        <Route path='/Rider' element={
+          <PrivateRouteComponent role={['Rider']} userRole={user?.role}>
+            bruh
+          </PrivateRouteComponent>
+        } />
       </Routes>
     </div>
   )

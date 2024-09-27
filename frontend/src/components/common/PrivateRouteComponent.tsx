@@ -13,6 +13,8 @@ const PrivateRouteComponent = ({ children, role, userRole, redirectTo}: PrivateR
     if(!role.includes(userRole)) {
         if(userRole === 'Business') { 
             return <Navigate to={'/Dashboard'} />
+        } else if(userRole === 'Rider') {
+            return <Navigate to={'/Rider'} />
         } else if(redirectTo) {
             return <Navigate to={redirectTo} />
         } else {

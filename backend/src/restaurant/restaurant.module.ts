@@ -1,9 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RestaurantController } from './restaurant.controller';
 import { RestaurantService } from './restaurant.service';
-import { MenuModule } from 'src/menu/menu.module';
 import { LocationModule } from 'src/location/location.module';
-import { ReviewModule } from 'src/review/review.module';
 
 @Module({
   imports: [LocationModule],

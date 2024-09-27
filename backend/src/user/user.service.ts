@@ -198,30 +198,55 @@ export class UserService {
   async setLocation(body: SetLocationDto, req: any) {
     try {
       const userId = req.user.sub;
+      const role = req.user.role
+      
+      if(role === 'Rider') {
+        
+        const setRiderLocation = await prisma.rider.upsert({
+          where: {
+            userId: userId
+          },
+          update: {
+            latitude: body.latitude,
+            longitude: body.longitude
+          },
+          create: {
+            userId: userId,
+            latitude: body.latitude,
+            longitude: body.longitude,
+            name: req.user.name
+          }
+        })
 
-      const setLocationPrisma = await prisma.userInfo.upsert({
-        where: {
-          userId: userId,
-        },
-        update: {
-          latitude: body.latitude,
-          longitude: body.longitude,
-          address: body.address,
-        },
-        create: {
-          userId: userId,
-          latitude: body.latitude,
-          longitude: body.longitude,
-          address: body.address,
-        },
-        select: {
-          latitude: true,
-          longitude: true,
-          address: true,
-        },
-      })
+        return setRiderLocation
 
-      return setLocationPrisma;
+      } else {
+
+        const setLocationPrisma = await prisma.userInfo.upsert({
+          where: {
+            userId: userId,
+          },
+          update: {
+            latitude: body.latitude,
+            longitude: body.longitude,
+            address: body.address,
+          },
+          create: {
+            userId: userId,
+            latitude: body.latitude,
+            longitude: body.longitude,
+            address: body.address,
+          },
+          select: {
+            latitude: true,
+            longitude: true,
+            address: true,
+          },
+        })
+
+        return setLocationPrisma;
+
+      }
     } catch (error) {
       if(error instanceof Prisma.PrismaClientKnownRequestError) {
         if(error.code === 'P2003') {

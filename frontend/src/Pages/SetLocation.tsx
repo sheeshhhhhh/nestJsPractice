@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { useAuthContext } from "@/context/AuthContext"
 import { RestaurantLocation } from "@/types/restaurant.types"
 import apiClient from "@/util/apiClient"
 import { useState } from "react"
@@ -16,6 +17,8 @@ const SetLocation = () => {
         latitude: undefined,
         longitude: undefined,
     })
+
+    const { user } = useAuthContext()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -84,7 +87,7 @@ const SetLocation = () => {
                     />
                 </div>
             </div>
-            <div>
+            {user?.role === 'Customer' && <div>
                 <h2 className="font-semibold text-2xl mb-1">
                     Address
                 </h2>
@@ -94,7 +97,7 @@ const SetLocation = () => {
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="plase enter your address (required)"
                 />
-            </div>
+            </div>}
             <Button
             disabled={loading}
             type='submit'

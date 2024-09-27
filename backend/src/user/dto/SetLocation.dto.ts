@@ -8,6 +8,5 @@ export class SetLocationDto {
     longitude: number;
 
     @IsString()
-    @IsNotEmpty()
     address: string;
 }

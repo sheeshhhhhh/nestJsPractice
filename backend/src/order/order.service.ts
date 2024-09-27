@@ -6,13 +6,15 @@ import { OrderStatus, PaymentStatus, Prisma } from '@prisma/client';
 import { OrderStatusDto } from './dto/OrderStatus.dto';
 import { CreateorderTransactionDto } from './dto/CreateOrderTransaction.dto';
 import { OrderGatewayGateway } from 'src/order-gateway/order-gateway.gateway';
+import { RiderService } from 'src/rider/rider.service';
 
 @Injectable()
 export class OrderService {
     constructor(
         private paymongo: PaymongoService,
         private prisma: PrismaService,
-        private orderGateway: OrderGatewayGateway
+        private orderGateway: OrderGatewayGateway,
+        private riderServie: RiderService
     ) {}
 
     async getTotalPrice(userId: string) {
@@ -89,6 +91,8 @@ export class OrderService {
                 }
             })
 
+            const assignRider = await this.riderServie.assignRider(getUserInfo.latitude, getUserInfo.longitude)
+
             const createOrder = await txprisma.order.create({
                 data: {
                     userId: userId,
@@ -102,6 +106,7 @@ export class OrderService {
                     deliveryInstructions: deliveryInstructions,
                     latitude: getUserInfo.latitude,
                     longitude: getUserInfo.longitude,
+                    riderId: assignRider.id
                 }
             })
 
