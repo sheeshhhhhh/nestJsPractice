@@ -62,7 +62,7 @@ export const CartContextProvider = ({
     children
 }: PropsWithChildren) => {
     const [cart, setCart] = useState<Cart | undefined>(undefined)
-    const [loading, setLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(false)
     const { user } = useAuthContext()
     
     useEffect(() => {

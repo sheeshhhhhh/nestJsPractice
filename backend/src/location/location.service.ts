@@ -51,8 +51,6 @@ export class LocationService {
             if(!radiusKm) {
                 radiusKm = 5 // default
             }
-            console.log(radiusKm)
-            console.log(RiderStatus.Available)
 
             const getRiders = await this.prisma.$queryRaw<RiderWithLastOrder[]>`
                 SELECT "Rider".id, "Rider".latitude, "Rider".longitude, 

@@ -18,6 +18,7 @@ import PaymentSuccessful from './Pages/PaymentSuccessful'
 import Order from './Pages/Order'
 import OrderDetails from './Pages/OrderDetails'
 import SetLocation from './Pages/SetLocation'
+import RiderDashboard from './Pages/Rider/RiderDashboard'
 
 function App() {
   const location = useLocation()
@@ -125,9 +126,9 @@ function App() {
         } />
 
         {/* for Riders */}
-        <Route path='/Rider' element={
+        <Route path='/Rider/*' element={
           <PrivateRouteComponent role={['Rider']} userRole={user?.role}>
-            bruh
+            <RiderDashboard />
           </PrivateRouteComponent>
         } />
       </Routes>

@@ -12,12 +12,16 @@ type UserInfo = {
     longitude: number
 }
 
+// use confitional type to check if user is rider or restaurant later
 type User = {
     id: string
     name: string,
     username: string,
     oauthId?: string,
     restaurant?: {
+        id?: string
+    },
+    rider?: {
         id?: string
     }
     role: string,

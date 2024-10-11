@@ -15,13 +15,18 @@ const Dashboard = () => {
 
   useEffect(() => {
     // this is use forlistening to the new orders
-    const socket = io(import.meta.env.VITE_backendAPI_URL, {
+    const socket = io(``, {
       autoConnect: true,
       transports: ['websocket', 'polling'],
       query: {
         userId: user?.restaurant?.id
       }
     })
+
+    socket.on("connect", () => {
+      console.log("connected")
+    })
+
     socket.on('updateOrders', async (data: OrderBasicInformation) => {
       await queryClient.cancelQueries({ queryKey: ['restaurantOrders']})
       queryClient.setQueryData(['restaurantOrders'], (prevOrders: OrderBasicInformation[] | []) => {

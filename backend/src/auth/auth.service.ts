@@ -9,6 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { loginDTO, OwnerCreateDto, UserCreateDto } from './dto';
 import { JwtService } from '@nestjs/jwt';
 import { notContains } from 'class-validator';
+import { userAgent } from 'next/server';
 
 @Injectable()
 export class AuthService {
@@ -172,13 +173,22 @@ export class AuthService {
               latitude: true,
               longitude: true
             }
+          },
+          rider: {
+            select: {
+              id: true,
+              userId: true,
+              name: true,
+              latitude: true,
+              longitude: true,
+              createdAt: true
+            }
           }
         },
       });
 
       // check if user has location if not then throw error
-      
-      if(!getUser.userInfo.latitude || !getUser.userInfo.longitude || !getUser.userInfo.address)  {
+      if(getUser.role !== "Business" &&(!getUser.userInfo.latitude || !getUser.userInfo.longitude || !getUser.userInfo.address))  {
         throw new NotAcceptableException(`please set your location first`)
       }  
 

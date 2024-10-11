@@ -25,6 +25,7 @@ const imports = [
   UserModule, 
   RestaurantModule, 
   MenuModule, 
+  RiderModule,
   CategoryModule,
   LocationModule, 
   CartModule, 

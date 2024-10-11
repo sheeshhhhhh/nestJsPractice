@@ -6,4 +6,5 @@ export class RiderWithLastOrder {
     longitude: number;
     lastOrderTime: Date;
     distance: number;
+    userId: string;
 }

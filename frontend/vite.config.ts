@@ -25,8 +25,13 @@ export default defineConfig(({ mode }) => {
         "/api" : {
           changeOrigin: true,
           target: backendUrl,
-          rewrite: (path) => path.replace(/^\/api/, '')
+          rewrite: (path) => path.replace(/^\/api/, ''),
         },
+        "/socket.io": {
+          changeOrigin: true,
+          target: "ws://localhost:3000",
+          ws: true,
+        }
       }
     }
   }

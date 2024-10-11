@@ -1,21 +1,68 @@
 import { GoneException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { RiderStatus } from '@prisma/client';
 import { LocationService } from 'src/location/location.service';
+import { OrderGatewayGateway } from 'src/order-gateway/order-gateway.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RiderLocationDto } from './dto/RiderLocation.dto';
 
 @Injectable()
 export class RiderService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly locationService: LocationService
+        private readonly locationService: LocationService,
+        private readonly orderGateway: OrderGatewayGateway
     ) {}
 
-    async getRiderInfo(riderId: string) {
+    async getCurrentOrderForRiders(req: any) {
+        try {
+            const userId = req.user.sub
+
+            const getRiderInfo = await this.getRiderInfo(userId)
+
+            const getCurrentOrder = await this.prisma.order.findFirst({
+                where: {
+                    riderId: getRiderInfo.id
+                },
+                include: {
+                    restaurant: {
+                        select: {
+                            name: true,
+                            id: true,
+                            address: true,
+                            latitude: true,
+                            longitude: true,
+                        }
+                    },
+                    orderItems: {
+                        include: {
+                            menu: true
+                        }
+                    },
+                    user: {
+                        select: {
+                            name: true,
+                            id: true
+                        }
+                    }
+                }
+            })
+            
+            if(!getCurrentOrder) {
+                throw new GoneException('No order found')
+            }
+
+            return getCurrentOrder
+        } catch (error) {
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async getRiderInfo(userId: string) {
         try {
             
             const getRider = await this.prisma.rider.findFirst({
                 where: {
-                    id: riderId
+                    userId: userId
                 },
                 include: {
                     user: true
@@ -36,14 +83,17 @@ export class RiderService {
             // DO LATER!!!!
             // handle this so that the order will wait
             if(!nearByRiders) {
-                throw new GoneException('no riders found try again')
+                throw new Error('no riders found try again')
             }
-
             const updateRiderStatus = this.updateRiderStatus(nearByRiders.id, RiderStatus.OnDelivery)
+            
+            // socket for rider notificaiton and real time updates
+            const riderSocketId = this.orderGateway.getSocketId(nearByRiders.userId)
+            this.orderGateway.io.to(riderSocketId).emit('newOrder', 'new order is here')
 
             return nearByRiders
         } catch (error) {
-            throw new InternalServerErrorException()
+            throw new InternalServerErrorException(error.message)
         }
     }
 
@@ -62,6 +112,24 @@ export class RiderService {
             return updateStatusRider
         } catch (error) {
             console.log(error)
+            throw new InternalServerErrorException()
+        }
+    }
+
+    async updateRiderLocation(userId: string, body: RiderLocationDto) {
+        try {
+            const updateRiderLocation = await this.prisma.rider.update({
+                where: {
+                    userId: userId
+                },
+                data: {
+                    latitude: body.latitude,
+                    longitude: body.longitude
+                }
+            })
+
+            return "Location updated"
+        } catch (error) {
             throw new InternalServerErrorException()
         }
     }
