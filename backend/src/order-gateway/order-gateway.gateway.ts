@@ -7,6 +7,7 @@ import { Server } from 'socket.io'
  * NOTES 
  *  RIDER ID is represented as UserId
  *  RESTAURANT ID is represented as UserId
+ *  CUSTOMER ID is represented as UserId
  */
 @WebSocketGateway()
 export class OrderGatewayGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {

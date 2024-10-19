@@ -19,6 +19,7 @@ import Order from './Pages/Order'
 import OrderDetails from './Pages/OrderDetails'
 import SetLocation from './Pages/SetLocation'
 import RiderDashboard from './Pages/Rider/RiderDashboard'
+import Message from './Pages/Message'
 
 function App() {
   const location = useLocation()
@@ -85,6 +86,12 @@ function App() {
           </PrivateRouteComponent>
         } />
 
+        <Route path='/orderMessage/:orderId' element={
+          <PrivateRouteComponent role={['Customer', 'Rider']} userRole={user?.role} redirectTo={loginLink} >
+            <Message />
+          </PrivateRouteComponent>
+        }
+        />
         <Route path='/editCart/:cartItemId' element={
           <PrivateRouteComponent role={['Customer']} userRole={user?.role} redirectTo={loginLink} >
             <EditCartItem />

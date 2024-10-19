@@ -32,6 +32,8 @@ model User {
 
   role        role @default(Customer)
   
+  OrderMessages OrderMessage[] // don't mind this just a relation ship
+
   history     Order[]
   cart        Cart?
   reviews     Review[]
@@ -75,6 +77,8 @@ model Rider {
   status          RiderStatus @default(Available)
   deliveries      Order[]
   
+  orderMessages   OrderMessage[]
+
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt       DateTime    @default(now())
@@ -219,6 +223,8 @@ model Order {
   longitude       Float
 
 
+  orderMessages   OrderMessage[]
+
   deliveryTime    DateTime?
   deliveryInstructions  String?
 
@@ -256,6 +262,25 @@ model Review {
   createdAt   DateTime @default(now())
   @@unique([userId, restaurantId])
   @@unique([userId, id])
+}
+
+enum OrderMessageSender {
+  Rider
+  Customer
+}
+model OrderMessage {
+  id          String     @id @default(cuid())
+  orderId     String
+  body        String
+  userId      String?
+  RiderId     String?
+  sender      OrderMessageSender
+
+  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user        User?  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rider       Rider? @relation(fields: [RiderId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
 }
 
 // model Promotion {

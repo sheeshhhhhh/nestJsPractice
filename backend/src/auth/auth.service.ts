@@ -186,9 +186,12 @@ export class AuthService {
           }
         },
       });
+      if(!getUser) {
+        throw new InternalServerErrorException('user does not exist')
+      }
 
       // check if user has location if not then throw error
-      if(getUser.role !== "Business" &&(!getUser.userInfo.latitude || !getUser.userInfo.longitude || !getUser.userInfo.address))  {
+      if(getUser.role !== "Business" &&(!getUser?.userInfo?.latitude || !getUser?.userInfo?.longitude || !getUser.userInfo.address))  {
         throw new NotAcceptableException(`please set your location first`)
       }  
 
@@ -197,4 +200,5 @@ export class AuthService {
       return undefined;
     }
   }
+
 }

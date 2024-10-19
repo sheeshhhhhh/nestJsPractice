@@ -386,4 +386,90 @@ export class OrderService {
         }
     }
 
+    async messageOrderForRider(orderId: string, message: string, req: any) {
+        try {
+            const userId = req.user.sub;
+
+            const newMessage = await this.prisma.orderMessage.create({
+                data: {
+                    orderId: orderId,
+                    userId: userId,
+                    body: message,
+                    sender: 'Rider' // Add a field to distinguish the sender
+                }
+            });
+
+            const customer = await this.prisma.order.findFirst({
+                where: {
+                    id: orderId
+                },
+                select: {
+                    userId: true
+                }    
+            })
+
+            // Update socket here for rider communication
+            const CustomerSocketId = this.orderGateway.getSocketId(customer.userId)
+            console.log(CustomerSocketId)
+            this.orderGateway.io.to(CustomerSocketId).emit('message', newMessage) 
+
+            return newMessage;
+        } catch (error) {
+            // handle prisma erro later
+            throw new InternalServerErrorException('Failed to send message to rider');
+        }
+    }
+
+    async messageOrderForCustomer(orderId: string, message: string, req: any) {
+        try {
+            const userId = req.user.sub;
+
+            const newMessage = await this.prisma.orderMessage.create({
+                data: {
+                    orderId: orderId,
+                    userId: userId,
+                    body: message,
+                    sender: 'Customer' // Add a field to distinguish the sender
+                }
+            });
+            
+            const rider = await this.prisma.order.findFirst({
+                where: {
+                    id: orderId
+                },
+                select: {
+                    riderId: true
+                }
+            })
+            
+            // Update socket here for customer communication
+            const RiderSocketId = this.orderGateway.getSocketId(rider.riderId)
+            this.orderGateway.io.to(RiderSocketId).emit('message', newMessage)
+    
+            return newMessage;
+        } catch (error) {
+            // handle prisma error later
+            throw new InternalServerErrorException('Failed to send message to customer');
+        }
+    }
+
+    async getOrderMessages(orderId: string) {
+        try {
+            // maybe verify if the user is the customer or rider of the order
+            
+            const getMessages = await this.prisma.orderMessage.findMany({
+                where: {
+                    orderId: orderId,
+                },
+                orderBy: {
+                    createdAt: 'asc'
+                }
+            })
+
+            return getMessages
+        } catch (error) {
+            throw new InternalServerErrorException('failed to get messages')
+        }
+    }
+
 }   

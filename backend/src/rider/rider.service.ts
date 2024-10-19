@@ -14,7 +14,6 @@ export class RiderService {
     ) {}
 
     async getCurrentOrderForRiders(req: any) {
-        try {
             const userId = req.user.sub
 
             const getRiderInfo = await this.getRiderInfo(userId)
@@ -46,15 +45,11 @@ export class RiderService {
                     }
                 }
             })
-            
             if(!getCurrentOrder) {
                 throw new GoneException('No order found')
             }
 
             return getCurrentOrder
-        } catch (error) {
-            throw new InternalServerErrorException()
-        }
     }
 
     async getRiderInfo(userId: string) {
@@ -85,6 +80,7 @@ export class RiderService {
             if(!nearByRiders) {
                 throw new Error('no riders found try again')
             }
+            
             const updateRiderStatus = this.updateRiderStatus(nearByRiders.id, RiderStatus.OnDelivery)
             
             // socket for rider notificaiton and real time updates

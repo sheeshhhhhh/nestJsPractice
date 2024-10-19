@@ -35,11 +35,12 @@ const SetLocation = () => {
             }
 
             const data = response.data
-            if(data) {
-                // if successful
-                toast.success('Successfully set location')
-                return window.location.assign(`/`)
-            }
+            console.log(data)
+            // if(data) {
+            //     // if successful
+            //     toast.success('Successfully set location')
+            //     return window.location.assign(`/`)
+            // }
         } catch (error: any) {
             toast.error(error.message)
         } finally {
@@ -87,7 +88,7 @@ const SetLocation = () => {
                     />
                 </div>
             </div>
-            {user?.role === 'Customer' && <div>
+           <div>
                 <h2 className="font-semibold text-2xl mb-1">
                     Address
                 </h2>
@@ -97,7 +98,7 @@ const SetLocation = () => {
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="plase enter your address (required)"
                 />
-            </div>}
+            </div>
             <Button
             disabled={loading}
             type='submit'

@@ -4,7 +4,7 @@ import { Separator } from "../components/ui/separator"
 import AvatarProfile from "../components/common/AvatarProfile"
 import OrderMapRider, { markerPosition } from "../components/common/OrderMapRider"
 import { LatLngExpression } from "leaflet"
-import { useParams } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import apiClient from "../util/apiClient"
 import type { Order } from "../types/order.types"
@@ -28,6 +28,8 @@ const exampleData: markerPosition[] = [
 
 const Order = () => {
     const { orderId } = useParams()
+    // implement socket
+
     const { data:OrderInfo, isLoading } = useQuery({
         queryKey: ['currOrder', orderId],
         queryFn: async () => {
@@ -80,36 +82,39 @@ const Order = () => {
                     </h2>
                 </div>
             </div>
-            <Card className="shadow-md max-w-[600px] mx-auto p-3 flex justify-between px-6 cursor-pointer">
-                <div className="flex gap-6">
-                    <AvatarProfile 
-                    className="size-[56px]"
-                    // change later to riders profile
-                    src="https://lh3.googleusercontent.com/a/ACg8ocILSyRnrrWoY3MgN6TsdeI6SfLn1NvnknRuttegNo9rU3624I8=s96-c"
-                    />
-                    <div className="flex flex-col justify-center items-start ">
-                        <h2 className="font-bold text-lg">
-                            Contact your rider
-                        </h2>
-                        <p className="text-lg text-muted-foreground">
-                            Add delivery instructions
-                        </p>
+            <Link to={`/OrderMessage/${orderId}`}>
+                <Card className="shadow-md max-w-[600px] mx-auto p-3 flex justify-between px-6 cursor-pointer">
+                    <div className="flex gap-6">
+                        <AvatarProfile 
+                        className="size-[56px]"
+                        // change later to riders profile
+                        src="https://lh3.googleusercontent.com/a/ACg8ocILSyRnrrWoY3MgN6TsdeI6SfLn1NvnknRuttegNo9rU3624I8=s96-c"
+                        />
+                        <div className="flex flex-col justify-center items-start ">
+                            <h2 className="font-bold text-lg">
+                                Contact your rider
+                            </h2>
+                            <p className="text-lg text-muted-foreground">
+                                Add delivery instructions
+                            </p>
+                        </div>
                     </div>
-                </div>
-                <div className="p-[4px] h-[58px] w-[100px] relative">
-                    <MessageSquareTextIcon 
-                    className="absolute right-2 top-0"
-                    style={{
-                        transform: 'scaleX(-1)' // to flip the svg
-                    }}
-                    size={45} />
-                    <MessageSquareMoreIcon 
-                    fill="white"
-                    size={45}
-                    className="absolute bottom-1 left-7 z-20"
-                    />
-                </div>        
-            </Card>
+                    <div className="p-[4px] h-[58px] w-[100px] relative">
+                        <MessageSquareTextIcon 
+                        className="absolute right-2 top-0"
+                        style={{
+                            transform: 'scaleX(-1)' // to flip the svg
+                        }}
+                        size={45} />
+                        <MessageSquareMoreIcon 
+                        fill="white"
+                        size={45}
+                        className="absolute bottom-1 left-7 z-20"
+                        />
+                    </div>        
+                </Card>
+            </Link>
+            
             <Card className="shadow-lg">
                 <CardHeader>
                     <div className="flex gap-2 items-center" >
